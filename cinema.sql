@@ -203,10 +203,11 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `user_role`, `user_name`, `user_email`, `user_password`, `IsStaff`) VALUES
-(5, 'Admin', 'Tiến', 'kimngoctien10112004@gmail.com', 'Tien123@', 0),
+(1, 'Admin', 'admin', 'admin@cinema.com', '$2y$10$2sOWQKS0E55T4bYoCAnB5uaIqTLVoIt3pu7lx37gcAaqSvRxw7DrO', 1),
+(5, 'Admin', 'Tiến', 'kimngoctien10112004@gmail.com', 'Tien123@', 1),
 (7, 'Customer', 'Chiến', 'chien123@gmail.com', '$2y$10$c5NUUtvs.Es9M6VTO6gEzeuoQHmjR.WdVehy3igckPV.ClsolZRPS', 0),
-(8, 'Admin', 'Hiệp', 'hiep@gmail.com', '$2y$10$5Lcv0fVp3UD3OWFDkox5w.IMolXQdgQOaHiQL5O8fV9qH9td7nmc.', 0),
-(9, 'Admin', 'Duy', 'Duy@gmail.com', 'Duy123@', 0),
+(8, 'Admin', 'Hiệp', 'hiep@gmail.com', '$2y$10$5Lcv0fVp3UD3OWFDkox5w.IMolXQdgQOaHiQL5O8fV9qH9td7nmc.', 1),
+(9, 'Admin', 'Duy', 'Duy@gmail.com', 'Duy123@', 1),
 (13, 'Customer', 'Nguyen Van A', 'NguyenVanA@gmail.com', '$2y$10$yubjVMcP0RPzQ1Gp89QiYuSzFFCkhmIAnnQevM0.doYF6ez7qs8Ai', 0),
 (14, 'Customer', 'Nguyen Van B', 'NguyenB@gmail.com', '$2y$10$IQm6LSIoBTD.6PBMJ5gw9eHdlZSoiUQep4reQYc7ZfwnPtos5PeXa', 0);
 
