@@ -1,4 +1,10 @@
 <?php
+if (!ob_get_level()) {
+    ob_start();
+}
+if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+    session_start();
+}
 
 $host = getenv('DB_HOST') ?: 'localhost';           
 $dbname = getenv('DB_NAME') ?: 'cinema';  
