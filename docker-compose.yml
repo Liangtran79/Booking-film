@@ -10,6 +10,10 @@ services:
       DB_USER: root
       DB_PASSWORD: rootpassword
       DB_PORT: 3306
+      MAIL_HOST: smtp.gmail.com
+      MAIL_PORT: 587
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
     volumes:
       - ./uploads:/app/uploads
     depends_on:
