@@ -62,10 +62,20 @@ public class TelegramServiceImpl implements TelegramService {
             payload.put("disable_web_page_preview", true);
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
-            restTemplate.postForObject(url, entity, String.class);
-            log.info("[Telegram] Gửi tin nhắn thành công đến chat_id: {}", chatId);
+            boolean sent = false;
+            for (int attempt = 1; attempt <= 3; attempt++) {
+                try {
+                    restTemplate.postForObject(url, entity, String.class);
+                    log.info("[Telegram] Gửi tin nhắn thành công đến chat_id: {} (Lần thử {})", chatId, attempt);
+                    sent = true;
+                    break;
+                } catch (Exception ex) {
+                    if (attempt == 3) throw ex;
+                    try { Thread.sleep(600); } catch (InterruptedException ignored) {}
+                }
+            }
         } catch (Exception e) {
-            log.warn("[Telegram] Gửi tin nhắn thất bại: {}", e.getMessage());
+            log.warn("[Telegram] Gửi tin nhắn thất bại sau các lần thử: {}", e.getMessage());
         }
     }
 
