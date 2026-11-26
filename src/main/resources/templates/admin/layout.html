@@ -50,6 +50,11 @@
                 <i class='bx bxs-receipt icon'></i> Hóa đơn &amp; Vé
             </a>
         </li>
+        <li>
+            <a th:href="@{/admin/ai}" th:classappend="${activeTab == 'ai'} ? 'active' : ''">
+                <i class='bx bxs-bot icon'></i> Trợ lý AI
+            </a>
+        </li>
         <li class="divider">Hệ thống</li>
         <li>
             <a th:href="@{/}" target="_blank">

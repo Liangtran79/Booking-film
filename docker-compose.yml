@@ -17,6 +17,11 @@ services:
       TELEGRAM_ENABLED: ${TELEGRAM_ENABLED:-true}
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      OLLAMA_ENABLED: ${OLLAMA_ENABLED:-true}
+      OLLAMA_URL: ${OLLAMA_URL:-http://host.docker.internal:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:3b}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ./uploads:/app/uploads
     depends_on:
