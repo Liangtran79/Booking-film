@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
-@Table(name = "suatchieu")
+@Table(name = "showtimes")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,26 +19,26 @@ public class Showtime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MaSuatChieu")
+    @Column(name = "id")
     private Integer id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "MaPhim", nullable = false)
+    @JoinColumn(name = "movie_id", nullable = false)
     private Movie movie;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "MaPhong", nullable = false)
+    @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Column(name = "NgayChieu", nullable = false)
+    @Column(name = "show_date", nullable = false)
     private LocalDate showDate;
 
     @DateTimeFormat(pattern = "HH:mm:ss")
-    @Column(name = "GioBatDau")
+    @Column(name = "start_time")
     private LocalTime startTime;
 
-    @Column(name = "GiaVe", precision = 10, scale = 2)
+    @Column(name = "price", precision = 10, scale = 2)
     @Builder.Default
     private BigDecimal price = new BigDecimal("75000.00");
 }

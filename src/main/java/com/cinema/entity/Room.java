@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "phong")
+@Table(name = "rooms")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,9 +14,9 @@ public class Room {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MaPhong")
+    @Column(name = "id")
     private Integer id;
 
-    @Column(name = "TenPhong", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 }

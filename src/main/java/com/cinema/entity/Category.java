@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "theloai")
+@Table(name = "categories")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,9 +14,9 @@ public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MATL")
+    @Column(name = "id")
     private Integer id;
 
-    @Column(name = "TENTL", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 }

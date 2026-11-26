@@ -7,7 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "phim")
+@Table(name = "movies")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,25 +17,25 @@ public class Movie {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MaPhim")
+    @Column(name = "id")
     private Integer id;
 
-    @Column(name = "TenPhim", nullable = false)
+    @Column(name = "title", nullable = false)
     private String title;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "MATL", nullable = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Column(name = "NgayKhoiChieu")
+    @Column(name = "release_date")
     private LocalDate releaseDate;
 
     @Lob
-    @Column(name = "MoTa", columnDefinition = "TEXT")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "Hinh")
+    @Column(name = "image")
     private String image;
 
     // Tiện ích kiểm tra đang chiếu hay sắp chiếu

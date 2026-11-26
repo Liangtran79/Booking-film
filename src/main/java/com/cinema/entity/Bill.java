@@ -6,7 +6,7 @@ import lombok.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "hoadon")
+@Table(name = "orders")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 public class Bill {
 
     @Id
-    @Column(name = "MaHoaDon")
+    @Column(name = "id")
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -23,16 +23,16 @@ public class Bill {
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "MaSuatChieu", nullable = false)
+    @JoinColumn(name = "showtime_id", nullable = false)
     private Showtime showtime;
 
-    @Column(name = "Ghe", nullable = false)
+    @Column(name = "seats", nullable = false)
     private String seats;
 
-    @Column(name = "SoLuong")
+    @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "ThanhTien", precision = 10, scale = 2)
+    @Column(name = "total_amount", precision = 10, scale = 2)
     private BigDecimal totalAmount;
 
     @Column(name = "guest_name")
