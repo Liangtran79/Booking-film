@@ -1,39 +1,104 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <th:block th:replace="~{admin/layout :: admin-head('Movies Cinema Admin - Trợ lý AI (Ollama)')}"></th:block>
-    <link rel="stylesheet" th:href="@{/admin/css/dashboard.css}">
+    <th:block th:replace="~{admin/layout :: admin-head('AdminSite - Trợ lý AI')}"></th:block>
     <style>
-        .ai-textarea, .ai-select {
-            width: 100%;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
-            padding: 11px 13px;
-            font-size: 14px;
-            font-family: inherit;
+        .ai-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .ai-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .ai-status-badge.online {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .ai-status-badge.offline {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .ai-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+            align-items: start;
+        }
+        .ai-card {
             background: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+        .ai-card .widget-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #342e37;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ai-desc {
+            font-size: 0.9rem;
+            color: #64748b;
+            line-height: 1.5;
+            margin-bottom: 18px;
+        }
+        .ai-card .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            font-family: 'Open Sans', sans-serif;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .ai-card .form-group textarea {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 0.95rem;
+            min-height: 96px;
+        }
+        .ai-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+        .suggestion-btn {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: 'Open Sans', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .suggestion-btn:hover {
+            background: #e2e8f0;
             color: #0f172a;
         }
-        .ai-textarea:focus, .ai-select:focus {
-            outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-        }
-        .ai-sql-box {
-            background: #0f172a;
-            color: #e2e8f0;
-            padding: 14px 16px;
-            border-radius: 12px;
-            font-family: Consolas, Monaco, monospace;
-            font-size: 13px;
-            overflow-x: auto;
-            margin: 12px 0;
-        }
         .ai-alert {
-            padding: 12px 15px;
-            border-radius: 10px;
-            margin-bottom: 14px;
-            font-size: 14px;
+            padding: 12px 14px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            font-size: 0.92rem;
+            font-weight: 500;
         }
         .ai-alert.success {
             background: #dcfce7;
@@ -45,6 +110,46 @@
             color: #991b1b;
             border: 1px solid #fecaca;
         }
+        .ai-sql-box {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 14px 16px;
+            border-radius: 8px;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 12px 0 18px;
+        }
+        .ai-table-wrap {
+            overflow-x: auto;
+        }
+        .ai-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+        }
+        .ai-table th {
+            background: #f8fafc;
+            text-align: left;
+            color: #334155;
+            font-weight: 600;
+            padding: 12px;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+        }
+        .ai-table td {
+            padding: 11px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #1e293b;
+        }
+        .ai-table tbody tr:hover {
+            background: #f8fafc;
+        }
+        @media (max-width: 960px) {
+            .ai-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -54,129 +159,124 @@
 <section id="content">
     <nav th:replace="~{admin/layout :: navbar}"></nav>
 
-    <main class="dashboard-page">
-        <header class="topbar">
+    <main class="main-content">
+        <div class="ai-header">
             <div>
-                <small class="eyebrow">OLLAMA LOCAL AI · MOVIES CINEMA</small>
-                <h1>Trợ lý AI Rạp Chiếu Phim</h1>
-                <p>Hỏi dữ liệu bằng tiếng Việt (Text-to-SQL an toàn) &amp; Soạn bài quảng bá phim gửi Telegram</p>
+                <h1 class="title">Trợ lý AI</h1>
+                <ul class="breadcrumbs">
+                    <li><a th:href="@{/admin/dashboard}">Home</a></li>
+                    <li class="divider">/</li>
+                    <li><a href="#" class="active">Trợ lý AI</a></li>
+                </ul>
             </div>
             <div>
-                <span th:if="${ollamaAvailable}" class="badge success">
+                <span th:if="${ollamaAvailable}" class="ai-status-badge online">
                     ● Ollama Online (<span th:text="${ollamaModel}">qwen2.5:3b</span>)
                 </span>
-                <span th:unless="${ollamaAvailable}" class="badge warning">
+                <span th:unless="${ollamaAvailable}" class="ai-status-badge offline">
                     ○ Ollama Offline (<span th:text="${ollamaModel}">qwen2.5:3b</span>)
                 </span>
             </div>
-        </header>
+        </div>
 
-        <div class="grid-2">
-            <!-- PANEL 1: HỎI DỮ LIỆU BẰNG TIẾNG VIỆT (TEXT-TO-SQL) -->
-            <div class="panel">
-                <div class="panel-head">
-                    <h2><i class='bx bxs-bot' style="color:#2563eb;"></i> Hỏi dữ liệu Rạp phim (Text-to-SQL)</h2>
-                </div>
-                <p class="help">
-                    Ollama tự động chuyển câu hỏi tiếng Việt thành câu lệnh <code>SELECT</code> chỉ đọc trên các bảng
+        <div class="ai-grid">
+            <!-- FORM 1: HỎI DỮ LIỆU BẰNG TIẾNG VIỆT (TEXT-TO-SQL) -->
+            <section class="ai-card">
+                <h2 class="widget-title"><i class='bx bxs-bot' style="color:#1775f1;"></i> Hỏi dữ liệu Rạp phim (Text-to-SQL)</h2>
+                <p class="ai-desc">
+                    Chuyển câu hỏi tiếng Việt thành câu lệnh <code>SELECT</code> chỉ đọc trên các bảng
                     <code>movies</code>, <code>categories</code>, <code>rooms</code>, <code>showtimes</code>, <code>orders</code>, <code>users</code> (tối đa 200 dòng).
                 </p>
 
-                <form method="post" th:action="@{/admin/ai/query}" style="margin-top: 14px;">
-                    <label for="questionInput" style="display:block; font-weight:600; font-size:14px; margin-bottom:6px;">Câu hỏi của bạn:</label>
-                    <textarea id="questionInput" name="question" rows="3" class="ai-textarea" required
-                              th:text="${question}"
-                              placeholder="Ví dụ: Top 5 phim có doanh thu cao nhất trong hệ thống..."></textarea>
-
-                    <div style="margin-top: 12px;">
-                        <small class="help" style="font-weight:600; margin-bottom:6px; display:block;">Gợi ý câu hỏi nhanh:</small>
-                        <div class="actions" style="margin-top: 6px;">
-                            <button type="button" class="btn secondary small suggestion-btn" data-query="Top 5 phim có doanh thu cao nhất">Top 5 phim doanh thu cao</button>
-                            <button type="button" class="btn secondary small suggestion-btn" data-query="Thống kê số lượng phim theo từng thể loại">Phim theo thể loại</button>
-                            <button type="button" class="btn secondary small suggestion-btn" data-query="Danh sách 10 hóa đơn đặt vé có tổng tiền cao nhất">Top 10 hóa đơn giá trị cao</button>
-                            <button type="button" class="btn secondary small suggestion-btn" data-query="Đếm số suất chiếu theo từng phòng chiếu">Suất chiếu theo phòng</button>
-                        </div>
+                <form method="post" th:action="@{/admin/ai/query}">
+                    <div class="form-group">
+                        <label for="questionInput">Câu hỏi của bạn</label>
+                        <textarea id="questionInput" name="question" required
+                                  th:text="${question}"
+                                  placeholder="Ví dụ: Top 5 phim có doanh thu cao nhất trong hệ thống..."></textarea>
                     </div>
 
-                    <div class="actions">
-                        <button type="submit" class="btn primary">
-                            <i class='bx bx-send'></i> Phân tích &amp; Truy vấn
-                        </button>
+                    <div class="ai-suggestions">
+                        <button type="button" class="suggestion-btn" data-query="Top 5 phim có doanh thu cao nhất">Top 5 phim doanh thu cao</button>
+                        <button type="button" class="suggestion-btn" data-query="Thống kê số lượng phim theo từng thể loại">Phim theo thể loại</button>
+                        <button type="button" class="suggestion-btn" data-query="Danh sách 10 hóa đơn đặt vé có tổng tiền cao nhất">Top 10 hóa đơn giá trị cao</button>
+                        <button type="button" class="suggestion-btn" data-query="Đếm số suất chiếu theo từng phòng chiếu">Suất chiếu theo phòng</button>
                     </div>
+
+                    <button type="submit" class="btn-submit">Phân tích &amp; Truy vấn</button>
                 </form>
-            </div>
+            </section>
 
-            <!-- PANEL 2: AI SOẠN BÀI PR PHIM & GỬI TELEGRAM -->
-            <div class="panel">
-                <div class="panel-head">
-                    <h2><i class='bx bxl-telegram' style="color:#0284c7;"></i> AI Viết bài PR &amp; Gửi Telegram</h2>
-                </div>
-                <p class="help">
-                    Chọn một bộ phim để Ollama tự động viết nội dung quảng cáo hấp dẫn, sau đó bạn có thể chỉnh sửa trước khi gửi về kênh Telegram.
+            <!-- FORM 2: AI SOẠN BÀI PR PHIM & GỬI TELEGRAM -->
+            <section class="ai-card">
+                <h2 class="widget-title"><i class='bx bxl-telegram' style="color:#0284c7;"></i> AI Viết bài PR &amp; Gửi Telegram</h2>
+                <p class="ai-desc">
+                    Chọn một bộ phim để Ollama tự động viết nội dung quảng cáo, sau đó chỉnh sửa nhanh trước khi gửi về kênh Telegram.
                 </p>
 
-                <div th:if="${promoSuccess}" class="ai-alert success" th:text="${promoSuccess}" style="margin-top: 12px;"></div>
-                <div th:if="${promoError}" class="ai-alert error" th:text="${promoError}" style="margin-top: 12px;"></div>
+                <div th:if="${promoSuccess}" class="ai-alert success" th:text="${promoSuccess}"></div>
+                <div th:if="${promoError}" class="ai-alert error" th:text="${promoError}"></div>
 
-                <form method="post" th:action="@{/admin/ai/promo/generate}" style="margin-top: 14px;">
-                    <label for="movieSelect" style="display:block; font-weight:600; font-size:14px; margin-bottom:6px;">Chọn phim muốn quảng bá:</label>
-                    <select id="movieSelect" name="movieId" class="ai-select" required>
-                        <option value="">-- Chọn phim --</option>
-                        <option th:each="m : ${movies}"
-                                th:value="${m.id}"
-                                th:selected="${selectedMovieId != null and selectedMovieId == m.id}"
-                                th:text="${m.title + (m.category != null ? ' (' + m.category.name + ')' : '')}">
-                            Avengers
-                        </option>
-                    </select>
-                    <div class="actions">
-                        <button type="submit" class="btn primary">
-                            <i class='bx bx-magic-wand'></i> AI Tạo bài viết PR
-                        </button>
+                <form method="post" th:action="@{/admin/ai/promo/generate}">
+                    <div class="form-group">
+                        <label for="movieSelect">Chọn phim muốn quảng bá</label>
+                        <select id="movieSelect" name="movieId" required>
+                            <option value="">-- Chọn phim --</option>
+                            <option th:each="m : ${movies}"
+                                    th:value="${m.id}"
+                                    th:selected="${selectedMovieId != null and selectedMovieId == m.id}"
+                                    th:text="${m.title + (m.category != null ? ' (' + m.category.name + ')' : '')}">
+                                Avengers
+                            </option>
+                        </select>
                     </div>
+
+                    <button type="submit" class="btn-submit">AI Tạo bài viết PR</button>
                 </form>
 
-                <form th:if="${promoDraft != null}" method="post" th:action="@{/admin/ai/promo/send}" style="margin-top: 18px; padding-top: 14px; border-top: 1px solid #e2e8f0;">
-                    <label for="promoText" style="display:block; font-weight:600; font-size:14px; margin-bottom:6px;">Bản nháp bài viết (có thể chỉnh sửa trước khi gửi):</label>
-                    <textarea id="promoText" name="promoText" rows="6" class="ai-textarea" required th:text="${promoDraft}"></textarea>
-                    <div class="actions">
-                        <button type="submit" class="btn primary" style="background:#0284c7;">
-                            <i class='bx bxl-telegram'></i> Gửi ngay tới Telegram
-                        </button>
+                <form th:if="${promoDraft != null}" method="post" th:action="@{/admin/ai/promo/send}" style="margin-top: 20px; padding-top: 18px; border-top: 1px solid #e2e8f0;">
+                    <div class="form-group">
+                        <label for="promoText">Bản nháp bài viết (có thể chỉnh sửa trước khi gửi)</label>
+                        <textarea id="promoText" name="promoText" rows="6" required th:text="${promoDraft}"></textarea>
                     </div>
+                    <button type="submit" class="btn-submit" style="background-color:#0284c7;">Gửi ngay tới Telegram</button>
                 </form>
-            </div>
+            </section>
         </div>
 
         <!-- KẾT QUẢ TRUY VẤN TEXT-TO-SQL -->
-        <div th:if="${sqlResult != null}" class="panel table-scroll">
-            <div class="panel-head">
-                <h2>Kết quả truy vấn AI</h2>
-                <span th:if="${sqlResult.success}" class="badge success" th:text="${#lists.size(sqlResult.rows)} + ' dòng · ' + ${sqlResult.elapsedMs} + ' ms'">0 dòng</span>
-                <span th:unless="${sqlResult.success}" class="badge warning" th:text="'Lỗi · ' + ${sqlResult.elapsedMs} + ' ms'">Lỗi</span>
+        <section th:if="${sqlResult != null}" class="ai-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+                <h2 class="widget-title" style="margin-bottom:0;">Kết quả truy vấn AI</h2>
+                <span th:if="${sqlResult.success}" class="ai-status-badge online" th:text="${#lists.size(sqlResult.rows)} + ' dòng · ' + ${sqlResult.elapsedMs} + ' ms'">0 dòng</span>
+                <span th:unless="${sqlResult.success}" class="ai-status-badge offline" th:text="'Lỗi · ' + ${sqlResult.elapsedMs} + ' ms'">Lỗi</span>
             </div>
 
             <div th:if="${!sqlResult.success}" class="ai-alert error" th:text="${sqlResult.error}">Lỗi</div>
 
             <div th:if="${sqlResult.success}">
-                <p class="help" th:if="${sqlResult.explanation != null and !sqlResult.explanation.isEmpty()}" th:text="${sqlResult.explanation}"></p>
+                <p class="ai-desc" style="margin-bottom:8px;" th:if="${sqlResult.explanation != null and !sqlResult.explanation.isEmpty()}" th:text="${sqlResult.explanation}"></p>
                 <div class="ai-sql-box" th:text="${sqlResult.sql}">SELECT ...</div>
 
-                <table class="table" th:if="${!#lists.isEmpty(sqlResult.rows)}">
-                    <thead>
-                        <tr>
-                            <th th:each="col : ${sqlResult.columns}" th:text="${col}">Column</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="row : ${sqlResult.rows}">
-                            <td th:each="col : ${sqlResult.columns}" th:text="${row[col]}">Value</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <p th:if="${#lists.isEmpty(sqlResult.rows)}" class="empty">Truy vấn hợp lệ nhưng không có dữ liệu trả về.</p>
+                <div class="ai-table-wrap" th:if="${!#lists.isEmpty(sqlResult.rows)}">
+                    <table class="ai-table">
+                        <thead>
+                            <tr>
+                                <th th:each="col : ${sqlResult.columns}" th:text="${col}">Column</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="row : ${sqlResult.rows}">
+                                <td th:each="col : ${sqlResult.columns}" th:text="${row[col]}">Value</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p th:if="${#lists.isEmpty(sqlResult.rows)}" class="ai-desc" style="text-align:center; padding: 20px 0;">
+                    Truy vấn hợp lệ nhưng không có dữ liệu trả về.
+                </p>
             </div>
-        </div>
+        </section>
     </main>
 </section>
 
