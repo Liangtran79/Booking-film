@@ -3,6 +3,7 @@ package com.cinema.controller.admin;
 import com.cinema.entity.Category;
 import com.cinema.entity.Movie;
 import com.cinema.service.MovieService;
+import com.cinema.service.TelegramService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +23,7 @@ import java.util.List;
 public class AdminMovieController {
 
     private final MovieService movieService;
+    private final TelegramService telegramService;
 
     @GetMapping
     public String listMovies(@RequestParam(value = "page", defaultValue = "0") int page,
@@ -90,6 +92,13 @@ public class AdminMovieController {
     public String deleteMovie(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
         movieService.deleteMovie(id);
         redirectAttributes.addFlashAttribute("successMessage", "Đã xóa phim thành công!");
+        return "redirect:/admin/movies";
+    }
+
+    @PostMapping("/{id}/broadcast-telegram")
+    public String broadcastToTelegram(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
+        movieService.getMovieById(id).ifPresent(telegramService::broadcastMoviePromotion);
+        redirectAttributes.addFlashAttribute("successMessage", "Đã gửi thông báo quảng bá phim lên kênh Telegram!");
         return "redirect:/admin/movies";
     }
 }

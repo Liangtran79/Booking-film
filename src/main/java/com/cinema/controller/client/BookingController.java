@@ -10,6 +10,7 @@ import com.cinema.service.BillService;
 import com.cinema.service.MovieService;
 import com.cinema.service.RoomService;
 import com.cinema.service.ShowtimeService;
+import com.cinema.service.TelegramService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class BookingController {
     private final RoomService roomService;
     private final ShowtimeService showtimeService;
     private final BillService billService;
+    private final TelegramService telegramService;
 
     @GetMapping({"/booking/seats", "/chair.php"})
     public String selectSeats(@RequestParam(value = "id", required = false) Integer movieIdParam,
@@ -168,6 +170,9 @@ public class BookingController {
                 guestEmail,
                 guestPhone
         );
+
+        // Gửi thông báo đơn đặt vé mới về Telegram
+        telegramService.sendBookingAlert(bill, movie, room, selectedSeats, dateStr, timeStr);
 
         LocalDate date = LocalDate.parse(dateStr);
         String qrCodeData = String.format("ORDER:%d|MOVIE:%d|SEATS:%s", bill.getId(), movieId, selectedSeats);

@@ -4,6 +4,7 @@ import com.cinema.entity.User;
 import com.cinema.repository.UserRepository;
 import com.cinema.service.EmailService;
 import com.cinema.service.UserService;
+import com.cinema.service.TelegramService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +23,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final TelegramService telegramService;
 
     @Override
     public List<User> getAllUsers() {
@@ -101,6 +103,9 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         User savedUser = userRepository.save(user);
+
+        // Gửi thông báo thành viên mới về Telegram
+        telegramService.sendNewUserAlert(savedUser);
 
         if (needVerify) {
             emailService.sendVerificationEmail(email, username, token);
