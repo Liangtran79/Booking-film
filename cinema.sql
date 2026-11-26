@@ -195,7 +195,9 @@ CREATE TABLE `users` (
   `user_name` varchar(255) DEFAULT NULL,
   `user_email` varchar(255) DEFAULT NULL,
   `user_password` varchar(255) DEFAULT NULL,
-  `IsStaff` tinyint(1) DEFAULT 0
+  `IsStaff` tinyint(1) DEFAULT 0,
+  `email_verified` tinyint(1) NOT NULL DEFAULT 0,
+  `verification_token` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

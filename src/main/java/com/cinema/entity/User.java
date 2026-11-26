@@ -34,6 +34,13 @@ public class User {
     @Builder.Default
     private Boolean isStaff = false;
 
+    @Column(name = "email_verified")
+    @Builder.Default
+    private Boolean emailVerified = false;
+
+    @Column(name = "verification_token")
+    private String verificationToken;
+
     public boolean isAdmin() {
         return "Admin".equalsIgnoreCase(this.role) || Boolean.TRUE.equals(this.isStaff);
     }

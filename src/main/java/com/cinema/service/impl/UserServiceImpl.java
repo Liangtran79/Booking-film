@@ -2,21 +2,26 @@ package com.cinema.service.impl;
 
 import com.cinema.entity.User;
 import com.cinema.repository.UserRepository;
+import com.cinema.service.EmailService;
 import com.cinema.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Override
     public List<User> getAllUsers() {
@@ -51,7 +56,6 @@ public class UserServiceImpl implements UserService {
 
         // 1. Kiểm tra bằng PasswordEncoder (BCrypt)
         if (storedHash != null && (storedHash.startsWith("$2a$") || storedHash.startsWith("$2y$") || storedHash.startsWith("$2b$"))) {
-            // Thay $2y$ hoặc $2b$ thành $2a$ nếu thư viện yêu cầu
             String standardBcrypt = storedHash.replaceFirst("^\\$2[yb]\\$", "\\$2a\\$");
             if (passwordEncoder.matches(password, standardBcrypt) || passwordEncoder.matches(password, storedHash)) {
                 return Optional.of(user);
@@ -79,15 +83,76 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Tên đăng nhập đã tồn tại: " + username);
         }
 
+        boolean staff = isStaff != null && isStaff;
+        String userRole = role != null ? role : "Customer";
+        
+        // Nếu là tài khoản khách hàng thông thường thì yêu cầu xác thực email
+        boolean needVerify = !staff && !"Admin".equalsIgnoreCase(userRole);
+        String token = needVerify ? UUID.randomUUID().toString() : null;
+
         User user = User.builder()
                 .username(username)
                 .email(email)
                 .password(passwordEncoder.encode(rawPassword))
-                .role(role != null ? role : "Customer")
-                .isStaff(isStaff != null && isStaff)
+                .role(userRole)
+                .isStaff(staff)
+                .emailVerified(!needVerify)
+                .verificationToken(token)
                 .build();
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        if (needVerify) {
+            emailService.sendVerificationEmail(email, username, token);
+        }
+
+        return savedUser;
+    }
+
+    @Override
+    @Transactional
+    public boolean verifyEmail(String token) {
+        if (token == null || token.isBlank()) {
+            return false;
+        }
+
+        Optional<User> userOpt = userRepository.findByVerificationToken(token);
+        if (userOpt.isEmpty()) {
+            return false;
+        }
+
+        User user = userOpt.get();
+        user.setEmailVerified(true);
+        user.setVerificationToken(null);
+        userRepository.save(user);
+        log.info("Xác thực email thành công cho tài khoản: {}", user.getEmail());
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public boolean resendVerificationEmail(String email) {
+        if (email == null || email.isBlank()) {
+            return false;
+        }
+
+        Optional<User> userOpt = userRepository.findByEmail(email.trim());
+        if (userOpt.isEmpty()) {
+            return false;
+        }
+
+        User user = userOpt.get();
+        if (Boolean.TRUE.equals(user.getEmailVerified())) {
+            return false; // Đã xác thực rồi
+        }
+
+        String token = UUID.randomUUID().toString();
+        user.setVerificationToken(token);
+        userRepository.save(user);
+
+        emailService.sendVerificationEmail(user.getEmail(), user.getUsername(), token);
+        log.info("Đã gửi lại email xác thực cho: {}", user.getEmail());
+        return true;
     }
 
     @Override

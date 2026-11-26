@@ -33,6 +33,18 @@
             text-align: center;
             font-weight: 500;
         }
+        .success-msg {
+            color: #2ecc71;
+            background: rgba(46, 204, 113, 0.15);
+            border: 1px solid #2ecc71;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin: 8px 0;
+            display: block;
+            text-align: center;
+            font-weight: 500;
+        }
     </style>
 </head>
 
@@ -83,7 +95,14 @@
                 <input type="text" name="email" placeholder="Email hoặc Tên đăng nhập" required th:value="${email}">
                 <input type="password" name="password" placeholder="Mật khẩu" required>
                 <a href="#">Quên mật khẩu?</a>
+                <span th:if="${login_success}" class="success-msg" th:text="${login_success}"></span>
                 <span th:if="${login_error}" class="error-msg" th:text="${login_error}"></span>
+                <div th:if="${unverified_email}" style="margin: 6px 0;">
+                    <form method="POST" th:action="@{/resend-verification}" style="background: transparent; padding: 0; box-shadow: none;">
+                        <input type="hidden" name="email" th:value="${unverified_email}">
+                        <button type="submit" style="background: none; border: none; color: #ff2c1f; font-size: 0.85rem; text-decoration: underline; cursor: pointer; padding: 0; width: auto; box-shadow: none;">Bấm vào đây để gửi lại email kích hoạt</button>
+                    </form>
+                </div>
                 <button type="submit">Đăng nhập</button>
             </form>
         </div>

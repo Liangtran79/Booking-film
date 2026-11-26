@@ -15,4 +15,6 @@ public interface UserService {
     User updateUser(Integer id, String username, String email, String role, Boolean isStaff);
     void updatePassword(Integer id, String newPassword);
     void deleteUser(Integer id);
+    boolean verifyEmail(String token);
+    boolean resendVerificationEmail(String email);
 }
