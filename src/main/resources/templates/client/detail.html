@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${movie.title + ' - Chi tiết phim'}">Chi tiết phim</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/detail.css}">
+    <!-- Logo web -->
+    <link rel="icon" th:href="@{/img/logo_web.jpg}" type="image/x-icon">
+    <!-- Box Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+    <!-- jQuery để dễ dàng sử dụng AJAX -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <style>
+        /* Các bước đặt vé */
+        .booking-step {
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .step-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .step-number {
+            background: var(--main-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .step-title h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        /* Chọn ngày */
+        .date-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .date-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .date-item.active {
+            background: var(--main-color) !important;
+            color: white !important;
+        }
+
+        .date-item.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Chọn phòng */
+        .room-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .room-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .room-item.active {
+            background: var(--main-color) !important;
+            color: white !important;
+        }
+
+        .room-item.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Chọn giờ */
+        .time-container {
+            margin-top: 15px;
+        }
+
+        .time-slots {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .time-slot {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .time-slot:hover {
+            background: var(--main-color);
+            color: white;
+        }
+
+        .time-slot.active {
+            background: var(--main-color) !important;
+            color: white !important;
+        }
+
+        /* Thông tin đặt vé */
+        .booking-info {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .info-label {
+            width: 120px;
+            font-weight: bold;
+        }
+
+        .btn-proceed {
+            background: var(--main-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn-proceed:hover {
+            background: #ff3e61;
+        }
+
+        /* Điều chỉnh cho nút mua vé */
+        .btn-buy-ticket,
+        .btn-trailer {
+            display: inline-block;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Hiệu ứng loading */
+        .loading {
+            position: relative;
+            opacity: 0.7;
+        }
+
+        .loading:after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <header>
+        <a th:href="@{/}" class="logo">
+            <i class="bx bx-movie"></i> Movies
+        </a>
+        <div class="bx bx-menu" id="menu-icon"></div>
+
+        <!-- Menu -->
+        <ul class="navbar">
+            <li><a th:href="@{/}">Trang chủ</a></li>
+            <li><a th:href="@{/movies}">Phim</a></li>
+            <li th:if="${session.is_staff}"><a th:href="@{/admin/dashboard}" style="color: #ff9800; font-weight: bold;">Quản trị</a></li>
+        </ul>
+        <div th:if="${session.user_id != null}" style="display: flex; align-items: center; gap: 10px;">
+            <span style="color: #fff; font-size: 0.9rem;">Xin chào, <b th:text="${session.user_name}">User</b></span>
+            <a th:href="@{/logout}" class="btn" style="padding: 6px 12px;">Đăng xuất</a>
+        </div>
+        <a th:if="${session.user_id == null}" th:href="@{/login}" class="btn">Đăng nhập</a>
+    </header>
+
+    <!-- Main Content -->
+    <main class="movie-container">
+        <section class="movie-header">
+            <!-- Ảnh phim bên trái -->
+            <div class="movie-image">
+                <img th:src="${movie.image != null and !movie.image.startsWith('http')} ? @{'/uploads/' + ${movie.image}} : @{/img/home1.jpg}"
+                     th:alt="${movie.title}">
+            </div>
+
+            <!-- Thông tin phim bên phải -->
+            <div class="movie-details">
+                <h1 th:text="${movie.title}">Tên Phim</h1>
+
+                <div class="movie-meta">
+                    <div class="meta-item">
+                        <i class="bx bx-calendar"></i>
+                        <span th:text="${movie.releaseDate != null ? #temporals.format(movie.releaseDate, 'dd/MM/yyyy') : 'Đang cập nhật'}">01/01/2026</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="bx bx-time"></i>
+                        <span>120 phút</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="bx bx-film"></i>
+                        <span th:text="${movie.category != null ? movie.category.name : 'Chung'}">Hành động</span>
+                    </div>
+                </div>
+
+                <div class="info-list">
+                    <div class="info-item">
+                        <div class="info-label">Khởi chiếu:</div>
+                        <div th:text="${movie.releaseDate != null ? #temporals.format(movie.releaseDate, 'dd/MM/yyyy') : 'Đang cập nhật'}">2026-01-01</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Thể loại:</div>
+                        <div th:text="${movie.category != null ? movie.category.name : 'Chung'}">Phim</div>
+                    </div>
+                </div>
+
+                <!-- Nút mua vé và xem trailer -->
+                <div class="action-buttons">
+                    <a href="javascript:void(0)" onclick="scrollToElement('#showtimes')" class="btn-buy-ticket">Mua vé ngay</a>
+                    <a href="javascript:void(0)" onclick="scrollToElement('#trailer')" class="btn-trailer">
+                        <i class="bx bx-play-circle"></i> Xem trailer
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mô tả phim -->
+        <section class="movie-description">
+            <h2>Nội dung phim</h2>
+            <p th:if="${movie.description != null and !movie.description.isBlank()}" th:text="${movie.description}">Nội dung phim...</p>
+            <p th:if="${movie.description == null or movie.description.isBlank()}">Đang cập nhật nội dung phim...</p>
+        </section>
+
+        <!-- Lịch chiếu phim -->
+        <section class="showtimes" id="showtimes">
+            <h2>Lịch chiếu</h2>
+
+            <!-- Bước 1: Chọn ngày -->
+            <div class="booking-step">
+                <div class="step-title">
+                    <span class="step-number">1</span>
+                    <h3>Chọn ngày xem phim</h3>
+                </div>
+                <div class="date-selector" id="date-selector">
+                    <th:block th:each="day : ${weekDays}">
+                        <a th:if="${day.isAvailable}"
+                           href="javascript:void(0)"
+                           th:attr="onclick=|selectDate('${day.date}')|"
+                           th:class="'date-item' + (${day.date == selectedDate} ? ' active' : '')">
+                            <span th:text="${day.label}">Thứ 2</span><br>
+                            <small th:text="${day.formatted}">23/11</small>
+                        </a>
+                        <div th:if="${!day.isAvailable}"
+                             class="date-item disabled"
+                             th:classappend="${day.date == selectedDate} ? ' active' : ''">
+                            <span th:text="${day.label}">Thứ 2</span><br>
+                            <small th:text="${day.formatted}">23/11</small>
+                        </div>
+                    </th:block>
+                </div>
+            </div>
+
+            <!-- Bước 2: Chọn phòng -->
+            <div class="booking-step">
+                <div class="step-title">
+                    <span class="step-number">2</span>
+                    <h3>Chọn phòng chiếu</h3>
+                </div>
+                <div class="room-selector" id="room-container">
+                    <th:block th:each="room : ${rooms}">
+                        <a th:if="${roomIdsWithShowtimes.contains(room.id)}"
+                           href="javascript:void(0)"
+                           th:attr="onclick=|selectRoom('${room.id}')|"
+                           th:class="'room-item' + (${room.id == selectedRoomId} ? ' active' : '')"
+                           th:text="${room.name}">Phòng 1</a>
+                        <div th:if="${!roomIdsWithShowtimes.contains(room.id)}"
+                             class="room-item disabled"
+                             th:text="${room.name}">Phòng 1</div>
+                    </th:block>
+                </div>
+            </div>
+
+            <!-- Bước 3: Chọn giờ -->
+            <div class="booking-step">
+                <div class="step-title">
+                    <span class="step-number">3</span>
+                    <h3>Chọn giờ chiếu</h3>
+                </div>
+                <div class="time-container">
+                    <div class="time-slots" id="time-container">
+                        <th:block th:if="${!#lists.isEmpty(showtimes)}">
+                            <a th:each="time : ${showtimes}"
+                               href="javascript:void(0)"
+                               th:attr="onclick=|selectTime('${time}')|"
+                               th:class="'time-slot' + (${time == selectedTime} ? ' active' : '')"
+                               th:text="${time}">19:00</a>
+                        </th:block>
+                        <p th:if="${#lists.isEmpty(showtimes)}">Không có lịch chiếu cho phòng này</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nút tiếp tục (chỉ hiển thị khi đã chọn đủ) -->
+            <div class="booking-step" id="booking-info-container" th:style="${selectedDate != null and selectedRoomId != null and selectedTime != null and !selectedTime.isBlank()} ? '' : 'display: none;'">
+                <div class="booking-info">
+                    <th:block th:if="${selectedDate != null and selectedRoomId != null and selectedTime != null and !selectedTime.isBlank()}">
+                        <h3>Thông tin đặt vé</h3>
+                        <div class="info-row">
+                            <div class="info-label">Phim:</div>
+                            <div th:text="${movie.title}">Tên phim</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Ngày chiếu:</div>
+                            <div th:text="${selectedDateFormatted}">01/01/2026</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Phòng chiếu:</div>
+                            <div th:text="${selectedRoomName}">Phòng 1</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Giờ chiếu:</div>
+                            <div th:text="${selectedTime}">19:00</div>
+                        </div>
+                        <a th:href="@{'/chair.php'(id=${movieId},room=${selectedRoomId},date=${selectedDate},time=${selectedTime})}"
+                           class="btn-proceed">Tiếp tục</a>
+                    </th:block>
+                </div>
+            </div>
+
+            <!-- Trailer phim -->
+            <section class="trailer-container" id="trailer">
+                <h2>Trailer phim</h2>
+                <div class="trailer-frame">
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+                </div>
+            </section>
+        </section>
+
+        <!-- Phim liên quan -->
+        <section class="related-movies" th:if="${!#lists.isEmpty(relatedMovies)}">
+            <h2>Phim cùng thể loại</h2>
+            <div class="related-container">
+                <div class="related-item" th:each="rm : ${relatedMovies}">
+                    <a th:href="@{'/detail.php'(id=${rm.id})}">
+                        <div class="related-image">
+                            <img th:src="${rm.image != null and !rm.image.startsWith('http')} ? @{'/uploads/' + ${rm.image}} : @{/img/home1.jpg}"
+                                 th:alt="${rm.title}">
+                        </div>
+                        <div class="related-title" th:text="${rm.title}">Tên phim</div>
+                        <div class="related-genre" th:text="${rm.category != null ? rm.category.name : 'Phim'}">Thể loại</div>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-box">
+                <a th:href="@{/}" class="logo">
+                    <i class="bx bx-movie"></i> Movies
+                </a>
+                <p>Website xem phim và đặt vé trực tuyến hàng đầu.</p>
+                <div class="social">
+                    <a href="#"><i class="bx bxl-facebook"></i></a>
+                    <a href="#"><i class="bx bxl-twitter"></i></a>
+                    <a href="#"><i class="bx bxl-instagram"></i></a>
+                    <a href="#"><i class="bx bxl-tiktok"></i></a>
+                </div>
+            </div>
+            <div class="footer-box">
+                <h2>Liên kết</h2>
+                <a th:href="@{/}">Trang chủ</a>
+                <a th:href="@{/movies}">Phim</a>
+            </div>
+            <div class="footer-box">
+                <h2>Thể loại</h2>
+                <a th:href="@{/movies(genre='Hành Động')}">Hành Động</a>
+                <a th:href="@{/movies(genre='Hoạt hình')}">Hoạt hình</a>
+                <a th:href="@{/movies(genre='Việt Nam')}">Việt Nam</a>
+            </div>
+            <div class="footer-box">
+                <h2>Liên hệ</h2>
+                <p><i class="bx bx-map"></i> 123 Đường ABC, Quận XYZ, TP.HCM</p>
+                <p><i class="bx bx-phone"></i> +84 123 456 789</p>
+                <p><i class="bx bx-envelope"></i> contact@moviecinema.com</p>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&#169; 2026 Movie Cinema. All Right Reserved.</p>
+        </div>
+    </footer>
+
+    <script th:inline="javascript">
+        let currentMovieId = /*[[${movieId}]]*/ 16;
+        let currentDate = /*[[${selectedDate}]]*/ '2026-11-26';
+        let currentRoom = /*[[${selectedRoomId}]]*/ 1;
+        let currentTime = /*[[${selectedTime}]]*/ '';
+
+        // Hàm chọn ngày
+        function selectDate(date) {
+            currentTime = '';
+            $('.date-selector .date-item').removeClass('active');
+            $(`.date-selector a[onclick*="${date}"]`).addClass('active');
+
+            $('#room-container').addClass('loading');
+            $('#time-container').addClass('loading');
+            $('#booking-info-container').hide();
+
+            window.history.pushState({}, '', `/detail.php?id=${currentMovieId}&date=${date}`);
+            currentDate = date;
+
+            $.ajax({
+                url: `/detail.php?id=${currentMovieId}&date=${date}&part=rooms`,
+                type: 'GET',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                success: function(response) {
+                    $('#room-container').html(response).removeClass('loading');
+                    const firstRoomLink = $('#room-container a.room-item').first();
+                    if (firstRoomLink.length) {
+                        const roomId = firstRoomLink.attr('onclick').match(/'([^']+)'/)[1];
+                        selectRoom(roomId);
+                    } else {
+                        $('#time-container').html('<p>Không có lịch chiếu cho ngày này</p>').removeClass('loading');
+                        $('#booking-info-container').hide();
+                    }
+                },
+                error: function() {
+                    $('#room-container').html('<p>Đã xảy ra lỗi khi tải dữ liệu</p>').removeClass('loading');
+                }
+            });
+        }
+
+        // Hàm chọn phòng
+        function selectRoom(roomId) {
+            currentTime = '';
+            $('#room-container .room-item').removeClass('active');
+            $(`#room-container a[onclick*="${roomId}"]`).addClass('active');
+            $('#time-container').addClass('loading');
+            $('#booking-info-container').hide();
+
+            window.history.pushState({}, '', `/detail.php?id=${currentMovieId}&date=${currentDate}&room=${roomId}`);
+            currentRoom = roomId;
+
+            $.ajax({
+                url: `/detail.php?id=${currentMovieId}&date=${currentDate}&room=${roomId}&part=times`,
+                type: 'GET',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                success: function(response) {
+                    $('#time-container').html(response).removeClass('loading');
+                    $('#booking-info-container').hide();
+                },
+                error: function() {
+                    $('#time-container').html('<p>Đã xảy ra lỗi khi tải dữ liệu</p>').removeClass('loading');
+                }
+            });
+        }
+
+        // Hàm chọn giờ
+        function selectTime(time) {
+            $('#time-container .time-slot').removeClass('active');
+            $(`#time-container a[onclick*="${time}"]`).addClass('active');
+            $('#booking-info-container').addClass('loading').show();
+
+            window.history.pushState({}, '', `/detail.php?id=${currentMovieId}&date=${currentDate}&room=${currentRoom}&time=${time}`);
+            currentTime = time;
+
+            $.ajax({
+                url: `/detail.php?id=${currentMovieId}&date=${currentDate}&room=${currentRoom}&time=${time}&part=booking-info`,
+                type: 'GET',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                success: function(response) {
+                    $('#booking-info-container .booking-info').html(response);
+                    $('#booking-info-container').removeClass('loading').show();
+                },
+                error: function() {
+                    $('#booking-info-container .booking-info').html('<p>Đã xảy ra lỗi khi tải thông tin</p>');
+                }
+            });
+        }
+
+        function scrollToElement(selector) {
+            const element = document.querySelector(selector);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    </script>
+</body>
+
+</html>

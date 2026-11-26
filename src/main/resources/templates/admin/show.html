@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{admin/layout :: admin-head('AdminSite - Quản lý Suất Chiếu')}"></head>
+
+<body>
+    <!-- SIDEBAR -->
+    <section th:replace="~{admin/layout :: sidebar('shows')}"></section>
+
+    <!-- CONTENT -->
+    <section id="content">
+        <nav th:replace="~{admin/layout :: navbar}"></nav>
+
+        <!-- MAIN -->
+        <main class="main-content">
+            <h1 class="title">Quản lý Suất Chiếu</h1>
+            <ul class="breadcrumbs">
+                <li><a th:href="@{/admin/dashboard}">Home</a></li>
+                <li class="divider">/</li>
+                <li><a href="#" class="active">Suất Chiếu</a></li>
+            </ul>
+            <br>
+            <section class="table-widget">
+                <h2 class="widget-title">Danh sách suất chiếu</h2>
+                <div class="widget-header">
+                    <a th:href="@{/admin/shows/create}" class="btn-add-movie">Thêm mới</a>
+                </div>
+                <div class="product-table-header">
+                    <span class="column-header genre-header">ID</span>
+                    <span class="column-header product-header">Phim</span>
+                    <span class="column-header genre-header">Phòng</span>
+                    <span class="column-header release-date-header">Ngày Chiếu</span>
+                    <span class="column-header genre-header">Giờ Chiếu</span>
+                    <span class="column-header genre-header">Giá Vé</span>
+                    <span class="column-header action-header">&nbsp;</span>
+                </div>
+
+                <ul class="product-table-list">
+                    <li class="product-row" th:each="s : ${showtimes}">
+                        <div class="column product-id" th:text="${s.id}">1</div>
+                        <div class="column product-info" th:text="${s.movie != null ? s.movie.title : ''}">Tên phim</div>
+                        <div class="column genre-info" th:text="${s.room != null ? s.room.name : ''}">Phòng 1</div>
+                        <div class="column release-date-info" th:text="${s.showDate}">2026-01-01</div>
+                        <div class="column genre-info" th:text="${s.startTime}">19:00</div>
+                        <div class="column genre-info" th:text="${#numbers.formatDecimal(s.price, 0, 'COMMA', 0, 'POINT')} + ' đ'">75,000 đ</div>
+                        <div class="column action-info">
+                            <a th:href="@{'/admin/shows/edit/' + ${s.id}}" class="btn-action btn-edit" title="Chỉnh sửa">
+                                <i class='bx bx-edit'></i>
+                            </a>
+                            <form method="POST" th:action="@{'/admin/shows/delete/' + ${s.id}}" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xóa suất chiếu này?');">
+                                <button class="btn-action btn-edit" type="submit" aria-label="Xóa" style="cursor: pointer; background: none; border: none;">
+                                    <i class='bx bx-trash' style="color: #ff2c1f;"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+        </main>
+    </section>
+
+    <th:block th:replace="~{admin/layout :: scripts}"></th:block>
+</body>
+
+</html>

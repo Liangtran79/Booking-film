@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{admin/layout :: admin-head('AdminSite - Quản lý Phòng')}"></head>
+
+<body>
+    <!-- SIDEBAR -->
+    <section th:replace="~{admin/layout :: sidebar('rooms')}"></section>
+
+    <!-- CONTENT -->
+    <section id="content">
+        <nav th:replace="~{admin/layout :: navbar}"></nav>
+
+        <!-- MAIN -->
+        <main class="main-content">
+            <h1 class="title">Quản lý Phòng Chiếu</h1>
+            <ul class="breadcrumbs">
+                <li><a th:href="@{/admin/dashboard}">Home</a></li>
+                <li class="divider">/</li>
+                <li><a href="#" class="active">Phòng Chiếu</a></li>
+            </ul>
+            <br>
+            <section class="table-widget">
+                <h2 class="widget-title">Danh sách phòng chiếu</h2>
+                <div class="widget-header">
+                    <a th:href="@{/admin/rooms/create}" class="btn-add-movie">Thêm mới</a>
+                </div>
+                <div class="product-table-header">
+                    <span class="column-header genre-header">ID</span>
+                    <span class="column-header product-header">Tên Phòng Chiếu</span>
+                    <span class="column-header action-header">&nbsp;</span>
+                </div>
+
+                <ul class="product-table-list">
+                    <li class="product-row" th:each="r : ${rooms}">
+                        <div class="column product-id" th:text="${r.id}">1</div>
+                        <div class="column product-info" th:text="${r.name}">Phòng 1</div>
+                        <div class="column action-info">
+                            <a th:href="@{'/admin/rooms/edit/' + ${r.id}}" class="btn-action btn-edit" title="Chỉnh sửa">
+                                <i class='bx bx-edit'></i>
+                            </a>
+                            <form method="POST" th:action="@{'/admin/rooms/delete/' + ${r.id}}" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xóa phòng này?');">
+                                <button class="btn-action btn-edit" type="submit" aria-label="Xóa" style="cursor: pointer; background: none; border: none;">
+                                    <i class='bx bx-trash' style="color: #ff2c1f;"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+        </main>
+    </section>
+
+    <th:block th:replace="~{admin/layout :: scripts}"></th:block>
+</body>
+
+</html>

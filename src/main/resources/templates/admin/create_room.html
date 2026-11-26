@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/layout :: admin-head('Thêm Phòng Chiếu - AdminSite')}"></head>
+<body>
+    <section th:replace="~{admin/layout :: sidebar('rooms')}"></section>
+
+    <section id="content">
+        <nav th:replace="~{admin/layout :: navbar}"></nav>
+
+        <main class="main-content">
+            <h1 class="title">Quản lý Phòng Chiếu</h1>
+            <ul class="breadcrumbs">
+                <li><a th:href="@{/admin/dashboard}">Home</a></li>
+                <li class="divider">/</li>
+                <li><a th:href="@{/admin/rooms}">Phòng Chiếu</a></li>
+                <li class="divider">/</li>
+                <li><a href="#" class="active">Thêm Phòng</a></li>
+            </ul>
+            <br>
+            <section class="table-widget">
+                <h2 class="widget-title">Thêm Phòng Chiếu Mới</h2>
+
+                <div th:if="${errorMessage}" style="background-color: #ffebee; color: #d32f2f; padding: 10px 15px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #d32f2f;" th:text="${errorMessage}"></div>
+
+                <form th:action="@{/admin/rooms/create}" method="POST">
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="name" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Tên Phòng</label>
+                        <input type="text" id="name" name="name" placeholder="Ví dụ: Phòng 5, Phòng VIP..." required
+                               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9; font-size: 14px;">
+                    </div>
+
+                    <div class="form-actions" style="display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px;">
+                        <a th:href="@{/admin/rooms}" class="btn-cancel" style="display: inline-block; padding: 10px 20px; background-color: #e0e0e0; color: #333; border: none; border-radius: 5px; text-decoration: none; font-size: 14px;">Hủy</a>
+                        <button type="submit" class="btn-submit" style="display: inline-block; padding: 10px 20px; background-color: #1775F1; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">Thêm Phòng</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </section>
+
+    <th:block th:replace="~{admin/layout :: scripts}"></th:block>
+</body>
+</html>

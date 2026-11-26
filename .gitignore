@@ -15,3 +15,12 @@ $RECYCLE.BIN/
 
 # Temporary / Environment
 .env
+
+# Java build
+target/
+*.class
+*.jar
+*.war
+
+# Logs
+*.log

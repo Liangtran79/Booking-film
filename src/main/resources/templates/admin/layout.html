@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="admin-head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" th:href="@{/admin/css/style.css}">
+    <link rel="stylesheet" th:href="@{/admin/css/movie.css}">
+    <title th:text="${title}">AdminSite</title>
+</head>
+<body>
+
+<section id="sidebar" th:fragment="sidebar(activeTab)">
+    <a th:href="@{/admin/dashboard}" class="brand"><i class='bx bxs-smile icon'></i> Movie Admin</a>
+    <ul class="side-menu">
+        <li>
+            <a th:href="@{/admin/dashboard}" th:classappend="${activeTab == 'dashboard'} ? 'active' : ''">
+                <i class='bx bxs-dashboard icon'></i> Dashboard
+            </a>
+        </li>
+        <li class="divide" data-text="main">_________________________________</li>
+        <li>
+            <a th:href="@{/admin/users}" th:classappend="${activeTab == 'users'} ? 'active' : ''">
+                <i class='bx bxs-inbox icon'></i> Quản lý tài khoản <i class='bx bx-chevron-right icon-right'></i>
+            </a>
+        </li>
+        <li>
+            <a th:href="@{/admin/movies}" th:classappend="${activeTab == 'movies'} ? 'active' : ''">
+                <i class='bx bxs-chart icon'></i> Quản Lý phim
+            </a>
+        </li>
+        <li>
+            <a th:href="@{/admin/rooms}" th:classappend="${activeTab == 'rooms'} ? 'active' : ''">
+                <i class='bx bxs-widget icon'></i> Quản Lý Phòng
+            </a>
+        </li>
+        <li class="divide" data-text="table and forms">_________________________________</li>
+        <li>
+            <a th:href="@{/admin/bills}" th:classappend="${activeTab == 'bills'} ? 'active' : ''">
+                <i class='bx bx-table icon'></i> Quản lý hóa đơn
+            </a>
+        </li>
+        <li>
+            <a th:href="@{/admin/shows}" th:classappend="${activeTab == 'shows'} ? 'active' : ''">
+                <i class='bx bxs-notepad icon'></i> Quản lý suất chiếu
+            </a>
+        </li>
+        <li class="divide" data-text="client">_________________________________</li>
+        <li>
+            <a th:href="@{/}" target="_blank">
+                <i class='bx bx-globe icon'></i> Xem trang web Client
+            </a>
+        </li>
+        <li>
+            <a th:href="@{/logout}">
+                <i class='bx bxs-log-out-circle icon'></i> Đăng xuất
+            </a>
+        </li>
+    </ul>
+</section>
+
+<nav th:fragment="navbar">
+    <i class='bx bx-menu toggle-sidebar'></i>
+    <form action="#">
+        <div class="form-group">
+            <input type="text" placeholder="Search...">
+            <i class='bx bx-search icon'></i>
+        </div>
+    </form>
+    <a href="#" class="nav-link">
+        <i class='bx bxs-bell icon'></i>
+        <span class="badge">5</span>
+    </a>
+    <a href="#" class="nav-link">
+        <i class='bx bxs-message-square-dots icon'></i>
+        <span class="badge">8</span>
+    </a>
+    <span class="divider"></span>
+    <div class="profile">
+        <img th:src="@{/img/login.jpg}" alt="Avatar">
+        <ul class="profile-link">
+            <li><a href="#"><i class='bx bxs-user-circle icon'></i> Profile</a></li>
+            <li><a href="#"><i class='bx bxs-cog'></i> Settings</a></li>
+            <li><a th:href="@{/logout}"><i class='bx bxs-log-out-circle'></i> Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+<th:block th:fragment="scripts">
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script th:src="@{/admin/js/script.js}"></script>
+</th:block>
+
+</body>
+</html>

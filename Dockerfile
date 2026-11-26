@@ -1,27 +1,27 @@
-FROM php:8.2-apache
+# Stage 1: Build ứng dụng Spring Boot với Maven
+FROM maven:3.9.6-eclipse-temurin-17-alpine AS builder
 
-# Cài đặt extension pdo_mysql cho PHP
-RUN docker-php-ext-install pdo pdo_mysql
+WORKDIR /build
 
-# Bật Apache mod_rewrite
-RUN a2enmod rewrite
+# Copy pom.xml và tải dependencies trước để tận dụng Docker cache
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-# Cấu hình PHP (tăng giới hạn upload file, bộ nhớ)
-RUN { \
-    echo 'upload_max_filesize = 64M'; \
-    echo 'post_max_size = 64M'; \
-    echo 'memory_limit = 256M'; \
-    echo 'max_execution_time = 300'; \
-} > /usr/local/etc/php/conf.d/custom.ini
+# Copy toàn bộ mã nguồn và build package (bỏ qua test khi đóng gói image)
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Thư mục làm việc
-WORKDIR /var/www/html
+# Stage 2: Runtime container gọn nhẹ với JRE 17
+FROM eclipse-temurin:17-jre-alpine
 
-# Copy toàn bộ mã nguồn
-COPY . /var/www/html
+WORKDIR /app
 
-# Phân quyền cho www-data để upload ảnh vào admin/img/uploads
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 /var/www/html/admin/img/uploads
+# Tạo thư mục uploads
+RUN mkdir -p /app/uploads
 
-EXPOSE 80
+# Copy file jar từ builder
+COPY --from=builder /build/target/*.jar /app/app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

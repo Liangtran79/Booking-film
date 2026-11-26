@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/layout :: admin-head('Quản lý tài khoản - AdminSite')}"></head>
+<body>
+    <!-- SIDEBAR -->
+    <section th:replace="~{admin/layout :: sidebar('users')}"></section>
+
+    <!-- CONTENT -->
+    <section id="content">
+        <nav th:replace="~{admin/layout :: navbar}"></nav>
+
+        <!-- MAIN -->
+        <main class="main-content">
+            <h1 class="title">Quản lý Tài khoản</h1>
+            <ul class="breadcrumbs">
+                <li><a th:href="@{/admin/dashboard}">Home</a></li>
+                <li class="divider">/</li>
+                <li><a href="#" class="active">Tài Khoản</a></li>
+            </ul>
+            <br>
+            <section class="table-widget">
+                <h2 class="widget-title">Danh sách tài khoản</h2>
+                <div class="widget-header">
+                    <a th:href="@{/admin/users/create}" class="btn-add-user">Thêm tài khoản</a>
+                </div>
+
+                <div th:if="${successMessage}" style="background-color: #e8f5e9; color: #2e7d32; padding: 12px 15px; border-radius: 5px; margin-bottom: 20px;" th:text="${successMessage}"></div>
+                <div th:if="${errorMessage}" style="background-color: #ffebee; color: #d32f2f; padding: 12px 15px; border-radius: 5px; margin-bottom: 20px;" th:text="${errorMessage}"></div>
+
+                <div class="product-table-header">
+                    <span class="column-header genre-header">ID</span>
+                    <span class="column-header product-header">Họ Tên</span>
+                    <span class="column-header product-header">Email</span>
+                    <span class="column-header genre-header">Vai trò</span>
+                    <span class="column-header action-header">&nbsp;</span>
+                </div>
+
+                <ul class="product-table-list">
+                    <li class="product-row" th:each="user : ${users}">
+                        <div class="column product-id" th:text="${user.id}">1</div>
+                        <div class="column product-info" th:text="${user.username}">Admin Name</div>
+                        <div class="column product-info" th:text="${user.email}">admin@example.com</div>
+                        <div class="column genre-info" th:text="${user.role}">Admin</div>
+                        <div class="column action-info">
+                            <a th:href="@{'/admin/users/edit/' + ${user.id}}" class="btn-action btn-edit" title="Chỉnh sửa">
+                                <i class='bx bx-edit'></i>
+                            </a>
+                            <form method="POST" th:action="@{'/admin/users/delete/' + ${user.id}}" style="display:inline;">
+                                <button class="btn-action btn-edit" type="submit" aria-label="Xóa"
+                                        onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?');">
+                                    <i class='bx bx-trash'></i>
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+        </main>
+    </section>
+
+    <th:block th:replace="~{admin/layout :: scripts}"></th:block>
+</body>
+</html>

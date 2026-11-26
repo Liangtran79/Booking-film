@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<footer th:fragment="footer" class="footer">
+    <div class="footer-container">
+        <!-- Logo and About -->
+        <div class="footer-section about">
+            <a th:href="@{/}" class="logo">
+                <i class="bx bxs-movie"></i> Movies
+            </a>
+            <p class="footer-about">Nền tảng đặt vé xem phim trực tuyến hàng đầu với đa dạng thể loại phim và rạp chiếu khắp Việt Nam.</p>
+            <div class="social">
+                <a href="https://www.facebook.com/" title="Facebook"><i class='bx bxl-facebook'></i></a>
+                <a href="https://x.com/" title="Twitter"><i class='bx bxl-twitter'></i></a>
+                <a href="https://www.instagram.com/" title="Instagram"><i class='bx bxl-instagram'></i></a>
+                <a href="https://www.tiktok.com/" title="TikTok"><i class='bx bxl-tiktok'></i></a>
+            </div>
+        </div>
+
+        <!-- Links -->
+        <div class="footer-section links">
+            <h3>Liên kết nhanh</h3>
+            <ul>
+                <li><a th:href="@{/}">Trang chủ</a></li>
+                <li><a th:href="@{/movies}">Phim</a></li>
+                <li><a th:href="@{/#coming}">Phim sắp chiếu</a></li>
+            </ul>
+        </div>
+
+        <!-- Contact -->
+        <div class="footer-section contact">
+            <h3>Liên hệ với chúng tôi</h3>
+            <ul>
+                <li><i class='bx bxs-map'></i> 123 Nguyễn Văn Linh, Quận 7, TP.HCM</li>
+                <li><i class='bx bxs-phone'></i> +84 123 456 789</li>
+                <li><i class='bx bxs-envelope'></i> info@moviesvietnam.com</li>
+                <li><i class='bx bxs-time'></i> Thứ 2 - Chủ nhật: 8:00 - 22:00</li>
+            </ul>
+        </div>
+
+        <!-- Copyright -->
+        <div class="copyright">
+            <p>&#169; 2026 Movies Vietnam. Dự án Spring Boot Java chuẩn.</p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

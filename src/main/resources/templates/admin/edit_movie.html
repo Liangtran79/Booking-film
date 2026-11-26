@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{admin/layout :: admin-head('AdminSite - Chỉnh sửa Phim')}"></head>
+
+<body>
+    <!-- SIDEBAR -->
+    <section th:replace="~{admin/layout :: sidebar('movies')}"></section>
+
+    <!-- CONTENT -->
+    <section id="content">
+        <nav th:replace="~{admin/layout :: navbar}"></nav>
+
+        <!-- MAIN -->
+        <main class="main-content">
+            <h1 class="title">Quản lý Phim</h1>
+            <ul class="breadcrumbs">
+                <li><a th:href="@{/admin/dashboard}">Home</a></li>
+                <li class="divider">/</li>
+                <li><a th:href="@{/admin/movies}">Phim</a></li>
+                <li class="divider">/</li>
+                <li><a href="#" class="active">Chỉnh sửa</a></li>
+            </ul>
+            <br>
+            <section class="table-widget">
+                <h2 class="widget-title">Chỉnh sửa Phim</h2>
+
+                <form th:action="@{'/admin/movies/edit/' + ${movie.id}}" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="ten_phim">Tên Phim</label>
+                        <input type="text" id="ten_phim" name="title" th:value="${movie.title}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ma_tl">Thể Loại</label>
+                        <select name="categoryId" id="ma_tl" required>
+                            <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"
+                                    th:selected="${movie.category != null and movie.category.id == c.id}"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ngay_khoi_chieu">Ngày Khởi Chiếu</label>
+                        <input type="date" id="ngay_khoi_chieu" name="releaseDate" th:value="${movie.releaseDate}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mo_ta">Mô Tả</label>
+                        <textarea id="mo_ta" name="description" required th:text="${movie.description}"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hinh">Hình ảnh (để trống nếu không đổi)</label>
+                        <div th:if="${movie.image}" style="margin-bottom: 8px;">
+                            <img th:src="${movie.image != null and !movie.image.startsWith('http')} ? @{'/uploads/' + ${movie.image}} : @{/img/home1.jpg}"
+                                 style="width: 80px; height: 110px; object-fit: cover; border-radius: 4px;">
+                        </div>
+                        <input type="file" id="hinh" name="image" accept="image/*">
+                    </div>
+
+                    <button type="submit" class="btn-submit">Cập Nhật Phim</button>
+                </form>
+            </section>
+        </main>
+    </section>
+
+    <th:block th:replace="~{admin/layout :: scripts}"></th:block>
+</body>
+
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/layout :: admin-head('Chỉnh Sửa Hóa Đơn - AdminSite')}"></head>
+<body>
+    <section th:replace="~{admin/layout :: sidebar('bills')}"></section>
+
+    <section id="content">
+        <nav th:replace="~{admin/layout :: navbar}"></nav>
+
+        <main class="main-content">
+            <h1 class="title">Quản lý Hóa Đơn</h1>
+            <ul class="breadcrumbs">
+                <li><a th:href="@{/admin/dashboard}">Home</a></li>
+                <li class="divider">/</li>
+                <li><a th:href="@{/admin/bills}">Hóa Đơn</a></li>
+                <li class="divider">/</li>
+                <li><a href="#" class="active">Chỉnh Sửa</a></li>
+            </ul>
+            <br>
+            <section class="table-widget">
+                <h2 class="widget-title">Chỉnh Sửa Hóa Đơn</h2>
+
+                <form th:action="@{'/admin/bills/edit/' + ${bill.id}}" method="POST">
+                    <input type="hidden" name="billId" th:value="${bill.id}">
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="showtimeId" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Suất Chiếu</label>
+                        <select name="showtimeId" id="showtimeId" required onchange="updatePrice()"
+                                style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9; font-size: 14px;">
+                            <option value="">-- Chọn suất chiếu --</option>
+                            <option th:each="st : ${showtimes}"
+                                    th:value="${st.id}"
+                                    th:data-price="${st.price}"
+                                    th:selected="${bill.showtime != null && bill.showtime.id == st.id}"
+                                    th:text="${st.movie.title + ' - ' + st.room.name + ' - ' + #temporals.format(st.showDate, 'dd/MM/yyyy') + ' ' + #temporals.format(st.startTime, 'HH:mm')}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="guestName" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Tên Khách Hàng</label>
+                        <input type="text" name="guestName" id="guestName" th:value="${bill.guestName}" required
+                               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9; font-size: 14px;">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="guestEmail" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Email</label>
+                        <input type="email" name="guestEmail" id="guestEmail" th:value="${bill.guestEmail}"
+                               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9; font-size: 14px;">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="guestPhone" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Số Điện Thoại</label>
+                        <input type="text" name="guestPhone" id="guestPhone" th:value="${bill.guestPhone}"
+                               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9; font-size: 14px;">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="seats" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Ghế</label>
+                        <input type="text" name="seats" id="seats" th:value="${bill.seats}" required onchange="calculateSeats()"
+                               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9; font-size: 14px;">
+                        <small style="display: block; margin-top: 5px; font-size: 12px; color: #666;">Nhập các số ghế, phân cách bằng dấu phẩy (VD: A01, A02, B05)</small>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="quantity" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Số Lượng</label>
+                        <input type="number" name="quantity" id="quantity" min="1" th:value="${bill.quantity}" required onchange="updateTotal()"
+                               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9; font-size: 14px;">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="totalAmount" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Tổng Tiền (VNĐ)</label>
+                        <input type="number" name="totalAmount" id="totalAmount" min="0" th:value="${bill.totalAmount}" required
+                               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9; font-size: 14px;">
+                    </div>
+
+                    <div class="form-actions" style="display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px;">
+                        <a th:href="@{/admin/bills}" class="btn-cancel" style="display: inline-block; padding: 10px 20px; background-color: #e0e0e0; color: #333; border: none; border-radius: 5px; text-decoration: none; font-size: 14px;">Hủy</a>
+                        <button type="submit" class="btn-submit" style="display: inline-block; padding: 10px 20px; background-color: #1775F1; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">Cập Nhật</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </section>
+
+    <script>
+        function updatePrice() {
+            var select = document.getElementById('showtimeId');
+            var selectedOption = select.options[select.selectedIndex];
+            var price = selectedOption.getAttribute('data-price') || 0;
+            var quantity = document.getElementById('quantity').value || 1;
+            document.getElementById('totalAmount').value = price * quantity;
+        }
+
+        function calculateSeats() {
+            var seatsInput = document.getElementById('seats').value;
+            if (seatsInput.trim() !== '') {
+                var seats = seatsInput.split(',').filter(function(s) { return s.trim() !== ''; });
+                document.getElementById('quantity').value = seats.length;
+                updatePrice();
+            }
+        }
+
+        function updateTotal() {
+            updatePrice();
+        }
+    </script>
+    <th:block th:replace="~{admin/layout :: scripts}"></th:block>
+</body>
+</html>

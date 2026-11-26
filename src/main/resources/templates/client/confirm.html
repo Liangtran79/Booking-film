@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Đặt vé thành công - Movies</title>
+    <link rel="icon" th:href="@{/img/logo_web.jpg}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif !important;
+            background: #020307 !important;
+            background-color: #020307 !important;
+            color: #ffffff !important;
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #020307 !important;
+            z-index: 1000;
+            padding: 20px 100px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+        }
+
+        header .logo {
+            color: #ffffff !important;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            column-gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        header .logo .bx {
+            color: #ff2c1f !important;
+            font-size: 24px;
+        }
+
+        header .navbar {
+            display: flex;
+            column-gap: 5rem;
+            list-style: none;
+        }
+
+        header .navbar a {
+            color: #ffffff !important;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        header .navbar a:hover {
+            color: #ff2c1f !important;
+        }
+
+        header .btn {
+            background: #ff2c1f;
+            color: #fff !important;
+            padding: 9px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Main Container */
+        .payment-result {
+            max-width: 850px;
+            margin: 120px auto 60px;
+            padding: 0 20px;
+        }
+
+        .result-container {
+            background: #141414 !important;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+        }
+
+        .result-header {
+            text-align: center;
+            padding: 35px 20px 25px;
+        }
+
+        .result-icon {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 38px;
+        }
+
+        .result-icon.success {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border: 2px solid #10b981;
+        }
+
+        .result-icon.error {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 2px solid #ef4444;
+        }
+
+        .result-header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .result-header p {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 550px;
+            margin: 0 auto;
+        }
+
+        /* Ticket Styling */
+        .ticket {
+            background: #1c1c1c !important;
+            border-radius: 12px;
+            margin: 0 25px 25px;
+            overflow: hidden;
+            border: 1px dashed rgba(255, 255, 255, 0.18);
+        }
+
+        .ticket-top {
+            background: #252525 !important;
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.18);
+        }
+
+        .movie-info {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+        }
+
+        .movie-poster {
+            width: 75px;
+            flex-shrink: 0;
+        }
+
+        .movie-poster img {
+            width: 100%;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            display: block;
+        }
+
+        .movie-details h2 {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .movie-meta {
+            display: flex;
+            gap: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .movie-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .order-id {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 18px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .order-id span {
+            display: block;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 4px;
+        }
+
+        .order-id strong {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        /* Ticket Content */
+        .ticket-content {
+            padding: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .ticket-details {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .detail-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            flex: 1;
+            min-width: 180px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.05) !important;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .detail-item i {
+            font-size: 24px;
+            color: #ff2c1f;
+        }
+
+        .detail-info .label {
+            display: block;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .detail-info .value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .ticket-qr {
+            text-align: center;
+            padding: 15px;
+            background: #ffffff;
+            border-radius: 10px;
+            width: 170px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .ticket-qr img {
+            width: 140px;
+            height: 140px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .ticket-qr p {
+            color: #222;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        /* Ticket Info */
+        .ticket-info {
+            padding: 0 25px 25px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+        }
+
+        .info-section {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .info-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #ffffff;
+        }
+
+        .info-section h3 i {
+            color: #ff2c1f;
+        }
+
+        .info-content {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 0.95rem;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .info-row.total {
+            margin-top: 5px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        .info-row.total .info-value {
+            color: #ff2c1f;
+            font-size: 1.15rem;
+        }
+
+        /* Action Buttons */
+        .ticket-actions,
+        .error-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 10px 25px 30px;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            min-width: 150px;
+        }
+
+        .btn-action:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .btn-action.primary {
+            background: #ff2c1f;
+            border-color: #ff2c1f;
+        }
+
+        .btn-action.primary:hover {
+            background: #ff3e61;
+            box-shadow: 0 5px 15px rgba(255, 44, 31, 0.4);
+        }
+
+        /* Error Container */
+        .error-container {
+            padding-bottom: 30px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 20px;
+            }
+            .payment-result {
+                padding: 0 15px;
+            }
+            .ticket-top {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            .movie-info {
+                flex-direction: column;
+            }
+            .ticket-content, .ticket-info {
+                flex-direction: column;
+            }
+            .detail-row {
+                flex-direction: column;
+            }
+            .ticket-qr {
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <header>
+        <a th:href="@{/}" class="logo">
+            <i class="bx bx-movie"></i> Movies
+        </a>
+        <div class="bx bx-menu" id="menu-icon"></div>
+        <ul class="navbar">
+            <li><a th:href="@{/}">Trang chủ</a></li>
+            <li><a th:href="@{/movies}">Phim</a></li>
+            <li th:if="${session.is_staff}"><a th:href="@{/admin/dashboard}" style="color: #ff9800; font-weight: bold;">Quản trị</a></li>
+        </ul>
+        <div th:if="${session.user_id != null}" style="display: flex; align-items: center; gap: 10px;">
+            <span style="color: #fff; font-size: 0.9rem;">Xin chào, <b th:text="${session.user_name}">User</b></span>
+            <a th:href="@{/logout}" class="btn" style="padding: 6px 12px;">Đăng xuất</a>
+        </div>
+        <a th:if="${session.user_id == null}" th:href="@{/login}" class="btn">Đăng nhập</a>
+    </header>
+
+    <!-- Main Content -->
+    <main class="payment-result">
+        <th:block th:if="${paymentSuccess}">
+            <!-- Thành công -->
+            <div class="result-container success-container">
+                <div class="result-header">
+                    <div class="result-icon success">
+                        <i class='bx bx-check'></i>
+                    </div>
+                    <h1>Thanh toán thành công</h1>
+                    <p>Cảm ơn bạn đã đặt vé. Vui lòng kiểm tra email để xem thông tin chi tiết.</p>
+                </div>
+
+                <div class="ticket">
+                    <div class="ticket-top">
+                        <div class="movie-info">
+                            <div class="movie-poster">
+                                <img th:src="${movie.image != null and !movie.image.startsWith('http')} ? @{'/uploads/' + ${movie.image}} : @{/img/home1.jpg}"
+                                     th:alt="${movie.title}">
+                            </div>
+                            <div class="movie-details">
+                                <h2 th:text="${movie.title}">Tên phim</h2>
+                                <div class="movie-meta">
+                                    <span><i class='bx bx-time'></i> 120 phút</span>
+                                    <span><i class='bx bx-film'></i> <span th:text="${movie.category != null ? movie.category.name : 'Phim'}">Thể loại</span></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="order-id">
+                            <span>Mã đơn hàng</span>
+                            <strong th:text="'#' + ${orderId}">#123456</strong>
+                        </div>
+                    </div>
+
+                    <div class="ticket-content">
+                        <div class="ticket-details">
+                            <div class="detail-row">
+                                <div class="detail-item">
+                                    <i class='bx bx-calendar'></i>
+                                    <div class="detail-info">
+                                        <span class="label">Ngày chiếu</span>
+                                        <span class="value" th:text="${selectedDateFormatted}">01/01/2026</span>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <i class='bx bx-time'></i>
+                                    <div class="detail-info">
+                                        <span class="label">Giờ chiếu</span>
+                                        <span class="value" th:text="${selectedTime}">19:00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="detail-row">
+                                <div class="detail-item">
+                                    <i class='bx bx-building'></i>
+                                    <div class="detail-info">
+                                        <span class="label">Phòng chiếu</span>
+                                        <span class="value" th:text="${roomDetails.name}">Phòng 1</span>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <i class='bx bx-chair'></i>
+                                    <div class="detail-info">
+                                        <span class="label">Ghế</span>
+                                        <span class="value" th:text="${selectedSeats}">A01, A02</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ticket-qr">
+                            <img th:src="'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + ${qrCodeData}"
+                                 alt="QR Code">
+                            <p>Quét mã QR để kiểm tra vé</p>
+                        </div>
+                    </div>
+
+                    <div class="ticket-info">
+                        <div class="info-section">
+                            <h3><i class='bx bx-user'></i> Thông tin khách hàng</h3>
+                            <div class="info-content">
+                                <div class="info-row">
+                                    <span class="info-label">Họ tên:</span>
+                                    <span class="info-value" th:text="${guestName}">Nguyễn Văn A</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Email:</span>
+                                    <span class="info-value" th:text="${guestEmail}">email@example.com</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Số điện thoại:</span>
+                                    <span class="info-value" th:text="${guestPhone}">0123456789</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="info-section">
+                            <h3><i class='bx bx-credit-card'></i> Thông tin thanh toán</h3>
+                            <div class="info-content">
+                                <div class="info-row">
+                                    <span class="info-label">Số lượng vé:</span>
+                                    <span class="info-value" th:text="${seatCount} + ' vé'">2 vé</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Giá vé:</span>
+                                    <span class="info-value" th:text="${#numbers.formatDecimal(ticketPrice, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">75.000 VNĐ</span>
+                                </div>
+                                <div class="info-row total">
+                                    <span class="info-label">Tổng cộng:</span>
+                                    <span class="info-value" th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">150.000 VNĐ</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Phương thức:</span>
+                                    <span class="info-value" th:text="${paymentMethodName}">MoMo</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ticket-actions">
+                        <button class="btn-action" onclick="window.print()">
+                            <i class='bx bx-printer'></i> In vé
+                        </button>
+                        <a th:href="@{/}" class="btn-action primary">
+                            <i class='bx bx-home'></i> Về trang chủ
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+
+        <th:block th:if="${!paymentSuccess}">
+            <!-- Thất bại -->
+            <div class="result-container error-container">
+                <div class="result-header">
+                    <div class="result-icon error">
+                        <i class='bx bx-x'></i>
+                    </div>
+                    <h1>Thanh toán không thành công</h1>
+                    <p>Đã xảy ra lỗi trong quá trình thanh toán. Vui lòng thử lại sau hoặc liên hệ với chúng tôi để được hỗ trợ.</p>
+                </div>
+                <div class="error-actions">
+                    <a href="javascript:history.back()" class="btn-action">
+                        <i class='bx bx-arrow-back'></i> Quay lại
+                    </a>
+                    <a th:href="@{/}" class="btn-action primary">
+                        <i class='bx bx-home'></i> Về trang chủ
+                    </a>
+                </div>
+            </div>
+        </th:block>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container" style="display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 40px 20px; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+            <div class="footer-box">
+                <a th:href="@{/}" class="logo" style="color: #fff; font-size: 1.2rem; font-weight: 700; text-decoration: none;">
+                    <i class="bx bx-movie" style="color: #ff2c1f;"></i> Movies
+                </a>
+                <p style="color: rgba(255,255,255,0.6); margin-top: 10px; font-size: 0.9rem;">Website xem phim và đặt vé trực tuyến hàng đầu.</p>
+            </div>
+            <div class="footer-box">
+                <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">&#169; 2026 Movie Cinema. All Right Reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

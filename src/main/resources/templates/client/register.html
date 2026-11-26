@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: common-head('Đăng ký - Movies')}"></head>
+<body style="background: #111;">
+
+<header th:replace="~{fragments/header :: navbar('register')}"></header>
+
+<main style="display: flex; justify-content: center; align-items: center; min-height: 85vh; padding-top: 60px;">
+    <div style="width: 100%; max-width: 440px; background: #1e1e24; padding: 40px; border-radius: 12px; border: 1px solid #333; color: #fff;">
+        <h2 style="text-align: center; color: #ff9800; margin-bottom: 25px;"><i class="bx bx-user-plus"></i> Đăng Ký Tài Khoản</h2>
+
+        <div th:if="${error}" style="background: #e53935; color: #fff; padding: 10px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9rem;" th:text="${error}">
+            Lỗi đăng ký
+        </div>
+
+        <form th:action="@{/register}" th:object="${userDto}" method="post">
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 6px;">Tên đăng nhập *</label>
+                <input type="text" th:field="*{username}" required
+                       style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #2b2b36; color: #fff;">
+                <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}" style="color: #ff5252; font-size: 0.85rem;"></span>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 6px;">Địa chỉ Email *</label>
+                <input type="email" th:field="*{email}" required
+                       style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #2b2b36; color: #fff;">
+                <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color: #ff5252; font-size: 0.85rem;"></span>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 6px;">Mật khẩu *</label>
+                <input type="password" th:field="*{password}" required
+                       style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #2b2b36; color: #fff;">
+                <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" style="color: #ff5252; font-size: 0.85rem;"></span>
+            </div>
+
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; margin-bottom: 6px;">Xác nhận mật khẩu *</label>
+                <input type="password" th:field="*{confirmPassword}" required
+                       style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #2b2b36; color: #fff;">
+                <span th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}" style="color: #ff5252; font-size: 0.85rem;"></span>
+            </div>
+
+            <button type="submit" class="btn" style="width: 100%; padding: 12px; font-size: 1.1rem; border-radius: 6px;">
+                Đăng Ký Ngay <i class="bx bx-check"></i>
+            </button>
+        </form>
+
+        <p style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #aaa;">
+            Đã có tài khoản? <a th:href="@{/login}" style="color: #ff9800; font-weight: bold;">Đăng nhập</a>
+        </p>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

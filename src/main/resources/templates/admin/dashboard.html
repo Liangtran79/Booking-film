@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/layout :: admin-head('AdminSite - Dashboard')}"></head>
+<body>
+
+<section th:replace="~{admin/layout :: sidebar('dashboard')}"></section>
+
+<section id="content">
+    <nav th:replace="~{admin/layout :: navbar}"></nav>
+
+    <main>
+        <h1 class="title">Dashboard</h1>
+        <ul class="breadcrumbs">
+            <li><a href="#">Home</a></li>
+            <li class="divider">/</li>
+            <li><a href="#" class="active">Dashboard</a></li>
+        </ul>
+
+        <!-- CARDS -->
+        <div class="info-data">
+            <div class="card">
+                <div class="head">
+                    <div>
+                        <h2>1,850</h2>
+                        <p>Lượt truy cập</p>
+                    </div>
+                    <i class='bx bxs-user-plus icon'></i>
+                </div>
+                <span class="progress" data-value="65%"></span>
+                <span class="label">Tăng 15% so với tháng trước</span>
+            </div>
+            <div class="card">
+                <div class="head">
+                    <div>
+                        <h2 th:text="${totalBills}">542</h2>
+                        <p>Vé đã bán</p>
+                    </div>
+                    <i class='bx bxs-shopping-bag icon'></i>
+                </div>
+                <span class="progress" data-value="80%"></span>
+                <span class="label">Tăng 8% so với tuần trước</span>
+            </div>
+            <div class="card">
+                <div class="head">
+                    <div>
+                        <h2 th:text="${totalMovies}">28</h2>
+                        <p>Phim đang chiếu</p>
+                    </div>
+                    <i class='bx bxs-film icon'></i>
+                </div>
+                <span class="progress" data-value="95%"></span>
+                <span class="label">Thêm mới trong hệ thống</span>
+            </div>
+            <div class="card">
+                <div class="head">
+                    <div>
+                        <h2 th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">35M</h2>
+                        <p>Doanh thu (VNĐ)</p>
+                    </div>
+                    <i class='bx bx-line-chart icon'></i>
+                </div>
+                <span class="progress" data-value="75%"></span>
+                <span class="label">Thống kê toàn hệ thống</span>
+            </div>
+        </div>
+
+        <!-- RECENT MOVIES TABLE -->
+        <div class="data">
+            <div class="content-data">
+                <div class="head">
+                    <h3>Danh sách phim trong hệ thống</h3>
+                    <div class="menu">
+                        <i class='bx bx-dots-horizontal-rounded icon'></i>
+                        <ul class="menu-link">
+                            <li><a th:href="@{/admin/movies}"><i class='bx bx-list-ul'></i> Xem tất cả</a></li>
+                            <li><a th:href="@{/admin/movies/create}"><i class='bx bx-plus'></i> Thêm phim mới</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="movie-table">
+                        <thead>
+                            <tr>
+                                <th>Mã phim</th>
+                                <th>Tên phim</th>
+                                <th>Thể loại</th>
+                                <th>Khởi chiếu</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="r : ${revenueByMovie}">
+                                <td th:text="${r.movieId}">MP001</td>
+                                <td th:text="${r.movieTitle}">Avengers</td>
+                                <td>Phim</td>
+                                <td th:text="${r.ticketCount} + ' vé đã bán'">10 vé</td>
+                                <td><span class="badge success">Đang hoạt động</span></td>
+                                <td>
+                                    <a th:href="@{'/admin/movies/edit/' + ${r.movieId}}" class="btn-action btn-edit" title="Chỉnh sửa"><i class='bx bx-edit'></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</section>
+
+<th:block th:replace="~{admin/layout :: scripts}"></th:block>
+</body>
+</html>

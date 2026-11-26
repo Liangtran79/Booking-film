@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="common-head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Hệ thống rạp chiếu phim</title>
+    <link rel="icon" th:href="@{/img/logo_web.jpg}" type="image/x-icon">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+</head>
+<body>
+
+<header th:fragment="navbar(activePage)">
+    <a th:href="@{/}" class="logo">
+        <i class="bx bx-movie"></i> Movies
+    </a>
+    <div class="bx bx-menu" id="menu-icon"></div>
+
+    <ul class="navbar">
+        <li><a th:href="@{/}" th:classappend="${activePage == 'home'} ? 'home-active'">Trang chủ</a></li>
+        <li><a th:href="@{/movies}" th:classappend="${activePage == 'movies'} ? 'home-active'">Phim</a></li>
+        <li th:if="${session.currentUser != null and session.currentUser.admin}">
+            <a th:href="@{/admin/dashboard}" style="color: #ff9800; font-weight: bold;">Quản trị</a>
+        </li>
+    </ul>
+
+    <div class="user-auth-zone" style="display: flex; align-items: center; gap: 10px;">
+        <span th:if="${session.currentUser != null}" style="color: #fff; font-size: 0.9rem;">
+            Xin chào, <strong th:text="${session.currentUser.username}">User</strong>!
+        </span>
+        <a th:if="${session.currentUser != null}" th:href="@{/logout}" class="btn" style="padding: 6px 12px;">Đăng xuất</a>
+        <a th:if="${session.currentUser == null}" th:href="@{/login}" class="btn">Đăng nhập</a>
+    </div>
+</header>
+
+</body>
+</html>

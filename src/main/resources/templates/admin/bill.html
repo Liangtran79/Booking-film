@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/layout :: admin-head('AdminSite - Quản lý Hóa Đơn')}"></head>
+<body>
+    <!-- SIDEBAR -->
+    <section th:replace="~{admin/layout :: sidebar('bills')}"></section>
+
+    <!-- CONTENT -->
+    <section id="content">
+        <nav th:replace="~{admin/layout :: navbar}"></nav>
+
+        <!-- MAIN -->
+        <main class="main-content">
+            <h1 class="title">Quản lý Hóa Đơn</h1>
+            <ul class="breadcrumbs">
+                <li><a th:href="@{/admin/dashboard}">Home</a></li>
+                <li class="divider">/</li>
+                <li><a href="#" class="active">Hóa Đơn</a></li>
+            </ul>
+            <br>
+            <section class="table-widget">
+                <h2 class="widget-title">Danh sách hóa đơn</h2>
+                <div class="widget-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <a th:href="@{/admin/bills/create}" class="btn-add-movie">Thêm mới</a>
+                    <form th:action="@{/admin/bills}" method="get" style="display: flex; gap: 8px;">
+                        <input type="text" name="keyword" th:value="${keyword}" placeholder="Tìm theo tên khách, email, SĐT..."
+                               style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ddd; width: 260px; font-size: 14px;">
+                        <button type="submit" class="btn-action" style="padding: 8px 14px; background: #1775F1; color: #fff; border: none; border-radius: 6px; cursor: pointer;">
+                            <i class='bx bx-search'></i>
+                        </button>
+                    </form>
+                </div>
+
+                <div th:if="${successMessage}" style="background-color: #e8f5e9; color: #2e7d32; padding: 12px 15px; border-radius: 5px; margin-bottom: 20px;" th:text="${successMessage}"></div>
+
+                <div class="product-table-header">
+                    <span class="column-header genre-header">ID</span>
+                    <span class="column-header product-header">Khách Hàng</span>
+                    <span class="column-header product-header">Phim</span>
+                    <span class="column-header genre-header">Phòng</span>
+                    <span class="column-header release-date-header">Ngày Chiếu</span>
+                    <span class="column-header status-header">Số Lượng</span>
+                    <span class="column-header status-header">Tổng Tiền</span>
+                    <span class="column-header action-header">&nbsp;</span>
+                </div>
+
+                <ul class="product-table-list">
+                    <li class="product-row" th:each="bill : ${billPage.content}">
+                        <div class="column product-id" th:text="${bill.id}">1</div>
+                        <div class="column product-info" th:text="${bill.guestName != null && !bill.guestName.isEmpty() ? bill.guestName : (bill.user != null ? bill.user.username : 'Khách lẻ')}">Khách lẻ</div>
+                        <div class="column product-info" th:text="${bill.showtime != null && bill.showtime.movie != null ? bill.showtime.movie.title : 'N/A'}">Tên Phim</div>
+                        <div class="column genre-info" th:text="${bill.showtime != null && bill.showtime.room != null ? bill.showtime.room.name : 'N/A'}">Phòng 1</div>
+                        <div class="column release-date-info" th:text="${bill.showtime != null && bill.showtime.showDate != null ? #temporals.format(bill.showtime.showDate, 'dd/MM/yyyy') : 'N/A'}">01/01/2026</div>
+                        <div class="column status-info" th:text="${bill.quantity}">2</div>
+                        <div class="column status-info" th:text="${#numbers.formatDecimal(bill.totalAmount, 0, 'COMMA', 0, 'POINT') + '₫'}">150.000₫</div>
+                        <div class="column action-info">
+                            <a th:href="@{'/admin/bills/edit/' + ${bill.id}}" class="btn-action btn-edit" title="Chỉnh sửa">
+                                <i class='bx bx-edit'></i>
+                            </a>
+                            <form method="POST" th:action="@{'/admin/bills/delete/' + ${bill.id}}" style="display:inline;">
+                                <button class="btn-action btn-edit" type="submit" aria-label="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa hóa đơn này?');">
+                                    <i class='bx bx-trash'></i>
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+
+                <!-- Pagination -->
+                <div class="pagination" th:if="${billPage.totalPages > 1}">
+                    <a th:href="@{/admin/bills(page=0, keyword=${keyword})}">&laquo;</a>
+                    <a th:each="i : ${#numbers.sequence(0, billPage.totalPages - 1)}"
+                       th:href="@{/admin/bills(page=${i}, keyword=${keyword})}"
+                       th:text="${i + 1}"
+                       th:classappend="${i == billPage.number} ? 'active' : ''"></a>
+                    <a th:href="@{/admin/bills(page=${billPage.totalPages - 1}, keyword=${keyword})}">&raquo;</a>
+                </div>
+            </section>
+        </main>
+    </section>
+
+    <th:block th:replace="~{admin/layout :: scripts}"></th:block>
+</body>
+</html>
