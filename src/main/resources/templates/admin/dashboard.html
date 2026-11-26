@@ -1,6 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{admin/layout :: admin-head('AdminSite - Dashboard')}"></head>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{admin/layout :: admin-head('Movies Cinema Admin - Tổng quan hệ thống')}"></th:block>
+    <link rel="stylesheet" th:href="@{/admin/css/dashboard.css}">
+</head>
 <body>
 
 <section th:replace="~{admin/layout :: sidebar('dashboard')}"></section>
@@ -8,102 +11,188 @@
 <section id="content">
     <nav th:replace="~{admin/layout :: navbar}"></nav>
 
-    <main>
-        <h1 class="title">Dashboard</h1>
-        <ul class="breadcrumbs">
-            <li><a href="#">Home</a></li>
-            <li class="divider">/</li>
-            <li><a href="#" class="active">Dashboard</a></li>
-        </ul>
+    <main class="dashboard-page">
+        <header class="topbar">
+            <div>
+                <small class="eyebrow">QUẢN TRỊ RẠP CHIẾU PHIM</small>
+                <h1>Tổng quan hệ thống</h1>
+                <p>Movies Cinema · Theo dõi doanh thu, vé bán, phim và suất chiếu</p>
+            </div>
+            <div class="actions" style="margin-top: 0;">
+                <a class="btn secondary" th:href="@{/}" target="_blank">
+                    <i class='bx bx-globe'></i> Xem trang Client
+                </a>
+            </div>
+        </header>
 
-        <!-- CARDS -->
-        <div class="info-data">
+        <!-- 4 KPI CARDS -->
+        <div class="cards">
             <div class="card">
-                <div class="head">
-                    <div>
-                        <h2>1,850</h2>
-                        <p>Lượt truy cập</p>
-                    </div>
-                    <i class='bx bxs-user-plus icon'></i>
-                </div>
-                <span class="progress" data-value="65%"></span>
-                <span class="label">Tăng 15% so với tháng trước</span>
+                <span>Tổng doanh thu</span>
+                <strong th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</strong>
+                <small>Thống kê toàn hệ thống</small>
             </div>
             <div class="card">
-                <div class="head">
-                    <div>
-                        <h2 th:text="${totalBills}">542</h2>
-                        <p>Vé đã bán</p>
-                    </div>
-                    <i class='bx bxs-shopping-bag icon'></i>
-                </div>
-                <span class="progress" data-value="80%"></span>
-                <span class="label">Tăng 8% so với tuần trước</span>
+                <span>Vé đã bán</span>
+                <strong th:text="${#numbers.formatInteger(totalTicketsSold, 1, 'COMMA')}">0</strong>
+                <small th:text="'trong ' + ${totalBills} + ' hóa đơn đặt vé'">trong 0 hóa đơn</small>
             </div>
             <div class="card">
-                <div class="head">
-                    <div>
-                        <h2 th:text="${totalMovies}">28</h2>
-                        <p>Phim đang chiếu</p>
-                    </div>
-                    <i class='bx bxs-film icon'></i>
-                </div>
-                <span class="progress" data-value="95%"></span>
-                <span class="label">Thêm mới trong hệ thống</span>
+                <span>Phim đang chiếu</span>
+                <strong th:text="${nowPlayingCount}">0</strong>
+                <small th:text="'trong tổng ' + ${totalMovies} + ' phim hệ thống'">trong tổng 0 phim</small>
             </div>
-            <div class="card">
-                <div class="head">
-                    <div>
-                        <h2 th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">35M</h2>
-                        <p>Doanh thu (VNĐ)</p>
-                    </div>
-                    <i class='bx bx-line-chart icon'></i>
-                </div>
-                <span class="progress" data-value="75%"></span>
-                <span class="label">Thống kê toàn hệ thống</span>
+            <div class="card warning">
+                <span>Phim sắp chiếu</span>
+                <strong th:text="${comingSoonCount}">0</strong>
+                <small th:text="${totalShowtimes} + ' suất chiếu tại ' + ${totalRooms} + ' phòng'">0 suất chiếu</small>
             </div>
         </div>
 
-        <!-- RECENT MOVIES TABLE -->
-        <div class="data">
-            <div class="content-data">
-                <div class="head">
-                    <h3>Danh sách phim trong hệ thống</h3>
-                    <div class="menu">
-                        <i class='bx bx-dots-horizontal-rounded icon'></i>
-                        <ul class="menu-link">
-                            <li><a th:href="@{/admin/movies}"><i class='bx bx-list-ul'></i> Xem tất cả</a></li>
-                            <li><a th:href="@{/admin/movies/create}"><i class='bx bx-plus'></i> Thêm phim mới</a></li>
-                        </ul>
-                    </div>
+        <!-- QUICK BREAKDOWN & ACTIONS PANEL -->
+        <div class="panel">
+            <h2>Tổng quan vận hành &amp; Thao tác nhanh</h2>
+            <div class="unit-totals">
+                <div>
+                    <strong th:text="${totalShowtimes}">0</strong>
+                    <span>Suất chiếu đã lên lịch</span>
                 </div>
-                <div class="table-responsive">
-                    <table class="movie-table">
-                        <thead>
-                            <tr>
-                                <th>Mã phim</th>
-                                <th>Tên phim</th>
-                                <th>Thể loại</th>
-                                <th>Khởi chiếu</th>
-                                <th>Trạng thái</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="r : ${revenueByMovie}">
-                                <td th:text="${r.movieId}">MP001</td>
-                                <td th:text="${r.movieTitle}">Avengers</td>
-                                <td>Phim</td>
-                                <td th:text="${r.ticketCount} + ' vé đã bán'">10 vé</td>
-                                <td><span class="badge success">Đang hoạt động</span></td>
-                                <td>
-                                    <a th:href="@{'/admin/movies/edit/' + ${r.movieId}}" class="btn-action btn-edit" title="Chỉnh sửa"><i class='bx bx-edit'></i></a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div>
+                    <strong th:text="${totalRooms}">0</strong>
+                    <span>Phòng chiếu hoạt động</span>
+                </div>
+                <div>
+                    <strong th:text="${totalUsers}">0</strong>
+                    <span th:text="${verifiedUsersCount} + ' tài khoản đã xác thực'">0 đã xác thực</span>
+                </div>
+                <div>
+                    <strong th:text="${totalBills}">0</strong>
+                    <span>Tổng số đơn đặt vé</span>
                 </div>
             </div>
+            <p class="help">Số liệu được tổng hợp trực tiếp từ cơ sở dữ liệu vé, suất chiếu và tài khoản khách hàng.</p>
+            <div class="actions">
+                <a class="btn primary" th:href="@{/admin/movies/create}"><i class='bx bx-plus'></i> Thêm phim mới</a>
+                <a class="btn secondary" th:href="@{/admin/shows/create}"><i class='bx bx-calendar-plus'></i> Tạo suất chiếu</a>
+                <a class="btn secondary" th:href="@{/admin/bills}"><i class='bx bx-receipt'></i> Quản lý hóa đơn</a>
+                <a class="btn secondary" th:href="@{/admin/rooms}"><i class='bx bx-door-open'></i> Quản lý phòng</a>
+            </div>
+        </div>
+
+        <!-- 2-COLUMN TABLES -->
+        <div class="grid-2">
+            <!-- LEFT: REVENUE BY MOVIE -->
+            <div class="panel table-scroll">
+                <div class="panel-head">
+                    <h2>Doanh thu theo phim</h2>
+                    <a class="btn secondary small" th:href="@{/admin/bills}">Chi tiết</a>
+                </div>
+                <p class="help">Xếp hạng phim có doanh thu cao nhất theo hóa đơn đã đặt.</p>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Phim</th>
+                            <th>Số đơn</th>
+                            <th class="text-right">Doanh thu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r : ${revenueByMovie}">
+                            <td>
+                                <a class="link-id" th:href="@{'/admin/movies/edit/' + ${r.movieId}}" th:text="${r.movieTitle}">Avengers</a>
+                                <small th:text="'Mã phim #' + ${r.movieId}">Mã phim #1</small>
+                            </td>
+                            <td th:text="${r.ticketCount} + ' đơn'">0 đơn</td>
+                            <td class="text-right amount" th:text="${#numbers.formatDecimal(r.totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(revenueByMovie)}">
+                            <td colspan="3" class="empty">Chưa có dữ liệu doanh thu theo phim.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- RIGHT: RECENT MOVIES -->
+            <div class="panel table-scroll">
+                <div class="panel-head">
+                    <h2>Phim mới cập nhật</h2>
+                    <a class="btn secondary small" th:href="@{/admin/movies}">Xem tất cả</a>
+                </div>
+                <p class="help">Tối đa 8 phim mới nhất trong hệ thống cùng trạng thái phát hành.</p>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Tên phim</th>
+                            <th>Khởi chiếu</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="m : ${recentMovies}">
+                            <td>
+                                <a class="link-id" th:href="@{'/admin/movies/edit/' + ${m.id}}" th:text="${m.title}">Tên phim</a>
+                                <small th:text="${m.category != null ? m.category.name : 'Chưa phân loại'}">Thể loại</small>
+                            </td>
+                            <td th:text="${m.releaseDate != null ? #temporals.format(m.releaseDate, 'dd/MM/yyyy') : 'Chưa rõ'}">01/01/2025</td>
+                            <td>
+                                <span th:if="${m.nowPlaying}" class="badge success">Đang chiếu</span>
+                                <span th:if="${m.comingSoon}" class="badge warning">Sắp chiếu</span>
+                                <span th:if="${!m.nowPlaying and !m.comingSoon}" class="badge muted">Chưa có lịch</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(recentMovies)}">
+                            <td colspan="3" class="empty">Chưa có phim nào trong hệ thống.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- BOTTOM FULL-WIDTH: RECENT ORDERS -->
+        <div class="panel table-scroll">
+            <div class="panel-head">
+                <h2>Hóa đơn đặt vé gần đây</h2>
+                <a class="btn secondary small" th:href="@{/admin/bills}">Xem tất cả hóa đơn</a>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Mã hóa đơn</th>
+                        <th>Phim &amp; Suất chiếu</th>
+                        <th>Khách hàng</th>
+                        <th>Ghế đặt</th>
+                        <th class="text-right">Thành tiền</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="b : ${recentBills}">
+                        <td>
+                            <a class="link-id" th:href="@{'/admin/bills/edit/' + ${b.id}}" th:text="'#' + ${b.id}">#100001</a>
+                        </td>
+                        <td>
+                            <span th:text="${b.showtime != null and b.showtime.movie != null ? b.showtime.movie.title : 'N/A'}">Phim</span>
+                            <small th:if="${b.showtime != null}"
+                                   th:text="${(b.showtime.room != null ? b.showtime.room.name : '') + ' · ' + #temporals.format(b.showtime.showDate, 'dd/MM/yyyy') + (b.showtime.startTime != null ? ' ' + #temporals.format(b.showtime.startTime, 'HH:mm') : '')}">
+                                Phòng 1 · 01/01/2025 19:00
+                            </small>
+                        </td>
+                        <td>
+                            <span th:text="${b.guestName != null and !b.guestName.isEmpty() ? b.guestName : 'Khách vãng lai'}">Nguyễn Văn A</span>
+                            <small th:text="${b.guestPhone != null and !b.guestPhone.isEmpty() ? b.guestPhone : (b.guestEmail != null ? b.guestEmail : '')}">0901234567</small>
+                        </td>
+                        <td>
+                            <span th:text="${b.seats}">A1, A2</span>
+                            <small th:text="${(b.quantity != null ? b.quantity : 1) + ' vé'}">2 vé</small>
+                        </td>
+                        <td class="text-right amount" th:text="${b.totalAmount != null ? #numbers.formatDecimal(b.totalAmount, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}">150,000 đ</td>
+                        <td><span class="badge success">Đã đặt vé</span></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(recentBills)}">
+                        <td colspan="6" class="empty">Chưa có hóa đơn đặt vé nào.</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </main>
 </section>
